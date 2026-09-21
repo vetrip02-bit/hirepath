@@ -403,6 +403,7 @@ h1.with-icon, h2.with-icon, h3.with-icon {
 
 /* ===================== DASHBOARD — GETTING STARTED =================== */
 .launch-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(360px, .85fr); gap: .8rem; align-items: stretch; }
+.dashboard-hero + .launch-grid { margin-top: 1.2rem; }
 .launch-card {
   position: relative; isolation: isolate; overflow: hidden; padding: 1rem;
   border: 1px solid var(--teal-200); border-radius: 18px;
@@ -424,11 +425,10 @@ h1.with-icon, h2.with-icon, h3.with-icon {
 }
 .launch-outcomes .icon { width: .9rem; height: .9rem; }
 .launch-action { box-shadow: 0 9px 20px rgba(3,128,236,.24); }
-.launch-foot { margin: .6rem 0 0; color: var(--ink-muted); font-size: .76rem; }
-.launch-foot span { color: var(--ok-700); font-size: .62rem; }
 .start-panel {
   background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
   box-shadow: 0 10px 30px rgba(1,67,143,.07); padding: 1rem;
+  display: flex; flex-direction: column;
 }
 .launch-card, .start-panel { height: 100%; }
 .start-panel-head { display: flex; gap: .65rem; align-items: center; margin-bottom: .5rem; }
@@ -438,7 +438,10 @@ h1.with-icon, h2.with-icon, h3.with-icon {
   flex: 0 0 auto; border-radius: 12px; background: var(--teal-100); color: var(--teal-700); font-size: 1.2rem;
 }
 .start-title { font-size: 1.18rem; margin: 0; }
-.steps { list-style: none; margin: .3rem 0 0; padding: 0; }
+.steps {
+  flex: 1; display: grid; grid-template-rows: repeat(3, minmax(0, 1fr));
+  list-style: none; margin: .55rem 0 0; padding: 0;
+}
 .step { display: flex; gap: .65rem; align-items: center; padding: .45rem 0; }
 .step + .step { border-top: 1px solid var(--line-soft); }
 .step-num {
