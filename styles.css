@@ -32,7 +32,7 @@
   --line-soft: #e8f0f8;
   --surface: #ffffff;
   --surface-2: #f7faff;
-  --canvas: #f2f7fd;
+  --canvas: #ffffff;
 
   /* status */
   --ok-700: #0f6b46;   --ok-100: #e3f5ec;
@@ -64,11 +64,7 @@ body {
   font-size: 16px;
   line-height: 1.5;
   color: var(--ink);
-  background:
-    radial-gradient(800px 400px at 8% 0%, rgba(3,128,236,.1), transparent 70%),
-    radial-gradient(700px 340px at 92% 10%, rgba(1,67,143,.07), transparent 72%),
-    var(--canvas);
-  background-attachment: fixed;
+  background: var(--canvas);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -108,9 +104,7 @@ img { max-width: 100%; }
   min-height: 100%;
   display: flex; align-items: flex-start; justify-content: center;
   padding: 1.5rem 1.25rem;
-  background:
-    radial-gradient(1200px 460px at 50% -180px, var(--teal-100), transparent 70%),
-    var(--canvas);
+  background: var(--canvas);
 }
 .onboarding-card {
   width: 100%; max-width: 760px; background: var(--surface);
@@ -1285,13 +1279,18 @@ h1.with-icon, h2.with-icon, h3.with-icon {
 .quickwiki-search-card h2 {
   margin-bottom: 1.15rem; color: var(--navy-900); font-size: 1.75rem; letter-spacing: -.02em;
 }
-.quickwiki-search-row { display: grid; grid-template-columns: minmax(0, 1fr) 180px; gap: .8rem; }
-.quickwiki-input-wrap { min-width: 0; }
-.quickwiki-search-input {
-  width: 100%; min-height: 64px; padding: .85rem 1rem;
-  border-radius: 12px; background: #fff; font-size: 1rem;
+/* One row height for the field and the button: the wrapper stretches to the
+   row, and the input fills the wrapper, so the two cannot drift apart. */
+.quickwiki-search-row {
+  display: grid; grid-template-columns: minmax(0, 1fr) 180px;
+  gap: .8rem; align-items: stretch;
 }
-.quickwiki-search-row .btn { min-height: 64px; font-size: 1.05rem; }
+.quickwiki-input-wrap { min-width: 0; display: flex; }
+.quickwiki-search-row input.quickwiki-search-input {
+  flex: 1 1 auto; width: 100%; height: 64px; min-height: 64px;
+  padding: .85rem 1rem; border-radius: 12px; background: #fff; font-size: 1rem;
+}
+.quickwiki-search-row .btn { height: 64px; min-height: 64px; font-size: 1.05rem; }
 .quickwiki-popular {
   display: flex; flex-wrap: wrap; align-items: center; gap: .55rem;
   margin-top: 1rem; color: var(--ink-soft); font-size: .9rem;
