@@ -126,8 +126,6 @@ img { max-width: 100%; }
   color: var(--teal-700); border-radius: var(--radius);
   padding: .65rem .8rem; font-size: .9rem; margin-bottom: .9rem;
 }
-.onboarding-foot { margin: .75rem 0 0; font-size: .85rem; color: var(--ink-muted); }
-
 /* ============================== FORMS ================================ */
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem .9rem; }
 .field { display: flex; flex-direction: column; min-width: 0; }
@@ -404,7 +402,7 @@ h1.with-icon, h2.with-icon, h3.with-icon {
 .stat.is-navy .stat-icon { background: #e2f0ff; color: var(--navy-700); }
 
 /* ===================== DASHBOARD — GETTING STARTED =================== */
-.launch-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(360px, .85fr); gap: .8rem; align-items: start; }
+.launch-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(360px, .85fr); gap: .8rem; align-items: stretch; }
 .launch-card {
   position: relative; isolation: isolate; overflow: hidden; padding: 1rem;
   border: 1px solid var(--teal-200); border-radius: 18px;
@@ -432,6 +430,7 @@ h1.with-icon, h2.with-icon, h3.with-icon {
   background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
   box-shadow: 0 10px 30px rgba(1,67,143,.07); padding: 1rem;
 }
+.launch-card, .start-panel { height: 100%; }
 .start-panel-head { display: flex; gap: .65rem; align-items: center; margin-bottom: .5rem; }
 .start-panel-head .eyebrow { margin-bottom: .15rem; }
 .start-panel-icon {

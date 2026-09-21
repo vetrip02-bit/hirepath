@@ -17,7 +17,7 @@
 <meta name="twitter:description" content="Your job search, organized." />
 <meta name="twitter:image" content="https://hirepath-vetri.zohocorp-7484.chatgpt.site/assets/og.png" />
 <link rel="icon" href="assets/hirepath-logo.png?v=4" />
-<link rel="stylesheet" href="styles.css?v=4" />
+<link rel="stylesheet" href="styles.css?v=5" />
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
@@ -48,8 +48,7 @@
       <div class="field">
         <label for="ob-age">Age <span class="optional">(optional)</span></label>
         <input id="ob-age" name="age" type="number" min="14" max="100" inputmode="numeric"
-               aria-describedby="ob-age-help" placeholder="e.g. 22" />
-        <p class="field-help" id="ob-age-help">Optional.</p>
+               placeholder="e.g. 22" />
       </div>
 
       <div class="field">
@@ -76,24 +75,19 @@
         <p class="field-help" id="ob-skills-help">Separate each skill with a comma.</p>
       </div>
 
-      <div class="field">
-        <label for="ob-minutes">Daily preparation time (minutes)</label>
-        <input id="ob-minutes" name="dailyMinutes" type="number" min="10" max="600" step="5"
-               value="60" inputmode="numeric" />
-      </div>
-
-      <div class="field">
-        <label for="ob-reminder">Preferred reminder time</label>
-        <input id="ob-reminder" name="reminderTime" type="time" value="19:00" />
+      <div class="field field-wide">
+        <label for="ob-goal">Why are you choosing HirePath?</label>
+        <select id="ob-goal" name="goal">
+          <option value="Cracking jobs">Cracking jobs</option>
+          <option value="Preparing for exams">Preparing for exams</option>
+          <option value="Others">Others</option>
+        </select>
       </div>
 
       <div class="form-actions field-wide">
         <button type="submit" class="btn btn-primary btn-lg">Start using HirePath</button>
       </div>
     </form>
-    <p class="onboarding-foot">
-      Demo mode is on by default, so you can try everything without a key.
-    </p>
   </div>
 </div>
 
@@ -173,6 +167,6 @@
 
 <script src="gemini.js?v=4"></script>
 <script src="lookup.js?v=4"></script>
-<script src="app.js?v=4"></script>
+<script src="app.js?v=5"></script>
 </body>
 </html>

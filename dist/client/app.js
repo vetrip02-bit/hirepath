@@ -287,7 +287,7 @@
       version: 2,
       onboarded: false,
       profile: {
-        name: '', age: '', education: '', fieldOfStudy: '',
+        name: '', age: '', education: '', fieldOfStudy: '', goal: '',
         skills: [], dailyMinutes: 60, reminderTime: '19:00', createdAt: null
       },
       opportunities: [],
@@ -490,6 +490,7 @@
       age: asText(p.age).slice(0, 4),
       education: asText(p.education).slice(0, 160),
       fieldOfStudy: asText(p.fieldOfStudy).slice(0, 160),
+      goal: asText(p.goal).slice(0, 80),
       skills: asArray(p.skills).slice(0, 80),
       dailyMinutes: clampInt(p.dailyMinutes, 10, 600, 60),
       reminderTime: minutesFromHHMM(p.reminderTime) === null ? '19:00' : asText(p.reminderTime),
@@ -4402,6 +4403,7 @@
           age: asText(age.value).slice(0, 4),
           education: asText(education.value).slice(0, 160),
           fieldOfStudy: asText(fieldOfStudy.value).slice(0, 160),
+          goal: p.goal || '',
           skills: asArray(skills.value).slice(0, 80),
           dailyMinutes: clampInt(minutes.value, 10, 600, 60),
           reminderTime: minutesFromHHMM(reminder.value) === null ? '19:00' : reminder.value,
@@ -4961,15 +4963,15 @@
       nameInput.removeAttribute('aria-invalid');
       errorNode.textContent = '';
 
-      var reminderValue = $('#ob-reminder').value;
       state.profile = {
         name: nameValue.slice(0, 80),
         age: asText($('#ob-age').value).slice(0, 4),
         education: asText($('#ob-education').value).slice(0, 160),
         fieldOfStudy: asText($('#ob-field').value).slice(0, 160),
+        goal: asText($('#ob-goal').value).slice(0, 80),
         skills: asArray($('#ob-skills').value).slice(0, 80),
-        dailyMinutes: clampInt($('#ob-minutes').value, 10, 600, 60),
-        reminderTime: minutesFromHHMM(reminderValue) === null ? '19:00' : reminderValue,
+        dailyMinutes: 60,
+        reminderTime: '19:00',
         createdAt: new Date().toISOString()
       };
       state.onboarded = true;
