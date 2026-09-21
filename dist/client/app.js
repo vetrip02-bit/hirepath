@@ -915,12 +915,16 @@
     return node;
   }
 
-  function listTextArea(id, arr, rows) {
+  function listTextArea(id, arr, rows, placeholder) {
     var node = h('textarea', {
-      id: id, name: id, rows: String(rows || 4), placeholder: 'One item per line'
+      id: id, name: id, rows: String(rows || 4), placeholder: placeholder || ''
     });
     node.value = (arr || []).join('\n');
     return node;
+  }
+
+  function optionalFieldLabel(labelText) {
+    return h('span', null, labelText, ' ', h('span', { class: 'optional' }, '(optional)'));
   }
 
   function selectInput(id, options, current) {
@@ -1385,7 +1389,7 @@
     );
   }
 
-  function viewDashboard() {
+  function viewDashboardLegacy() {
     var s = dashboardStats();
     var name = state.profile.name || 'there';
     var today = todayISO();
@@ -1511,6 +1515,59 @@
     ));
 
     return frag;
+  }
+
+  function dashboardOverviewCard(iconName, title, value, hint, href) {
+    return h('a', { class: 'dashboard-overview-card', href: href },
+      h('span', { class: 'dashboard-overview-icon', 'aria-hidden': 'true' }, icon(iconName)),
+      h('span', { class: 'dashboard-overview-copy' },
+        h('span', { class: 'dashboard-overview-title' }, title),
+        h('strong', { class: 'dashboard-overview-value' }, value),
+        h('span', { class: 'dashboard-overview-hint' }, hint)));
+  }
+
+  function dashboardQuickAction(iconName, title, text, href, buttonText) {
+    return h('article', { class: 'dashboard-quick-card' },
+      h('span', { class: 'dashboard-quick-icon', 'aria-hidden': 'true' }, icon(iconName)),
+      h('div', { class: 'dashboard-quick-copy' },
+        h('h3', null, title),
+        h('p', null, text)),
+      h('a', { class: 'btn btn-secondary dashboard-quick-button', href: href }, buttonText));
+  }
+
+  /** Clean, full-height overview that keeps the most useful actions above the fold. */
+  function viewDashboard() {
+    var s = dashboardStats();
+    var name = state.profile.name || 'there';
+
+    return h('div', { class: 'dashboard-clean' },
+      h('header', { class: 'dashboard-clean-head' },
+        h('p', { class: 'eyebrow dashboard-date' }, formatDateLong(todayISO())),
+        h('h1', null, greeting() + ', ' + name + '.'),
+        h('p', { class: 'dashboard-clean-lede' },
+          'Build a focused plan for your next opportunity.'),
+        h('div', { class: 'dashboard-clean-actions' },
+          h('a', { class: 'btn btn-primary btn-lg', href: '#/add' },
+            h('span', { 'aria-hidden': 'true' }, '+'), ' Add opportunity'),
+          h('a', { class: 'btn btn-secondary btn-lg', href: '#/coach' }, 'Open Prep Coach'))),
+
+      h('section', { class: 'dashboard-clean-section', 'aria-labelledby': 'dashboard-progress-title' },
+        h('h2', { id: 'dashboard-progress-title' }, 'Your progress'),
+        h('div', { class: 'dashboard-overview-grid' },
+          dashboardOverviewCard('briefcase', 'Opportunities', s.total,
+            s.total ? 'View and manage your saved roles' : 'Add a role to begin', '#/opportunities'),
+          dashboardOverviewCard('calendar', 'Tasks today', s.tasksToday,
+            s.tasksToday ? 'Continue with today’s preparation' : 'Your schedule will appear here', '#/today'),
+          dashboardOverviewCard('target', 'Topics completed', s.planTotals.done,
+            s.planTotals.done ? 'Keep building your preparation streak' : 'Finished lessons appear here', '#/coach'))),
+
+      h('section', { class: 'dashboard-clean-section dashboard-quick-section', 'aria-labelledby': 'dashboard-actions-title' },
+        h('h2', { id: 'dashboard-actions-title' }, 'Quick actions'),
+        h('div', { class: 'dashboard-quick-grid' },
+          dashboardQuickAction('sparkle', 'Prep Coach',
+            'Create a focused lesson and quiz.', '#/coach', 'Open coach'),
+          dashboardQuickAction('compass', 'Quickwiki',
+            'Look up a company, skill, or industry.', '#/quickwiki', 'Open Quickwiki'))));
   }
 
   /* =========================================================================
@@ -1654,7 +1711,6 @@
     if (!draft.company) { missing.push('company'); }
     if (!draft.deadline) { missing.push('application deadline'); }
     if (!draft.requiredSkills.length) { missing.push('required skills'); }
-    if (!draft.documents.length) { missing.push('required documents'); }
     return missing;
   }
 
@@ -1675,8 +1731,12 @@
       qualifications: linesToArray(get('f-qualifications')),
       experienceRequirements: linesToArray(get('f-experience')),
       requiredSkills: linesToArray(get('f-required')),
-      preferredSkills: linesToArray(get('f-preferred')),
-      responsibilities: linesToArray(get('f-responsibilities')),
+      preferredSkills: $('#f-preferred', root)
+        ? linesToArray(get('f-preferred'))
+        : (draft.preferredSkills || []),
+      responsibilities: $('#f-responsibilities', root)
+        ? linesToArray(get('f-responsibilities'))
+        : (draft.responsibilities || []),
       documents: linesToArray(get('f-documents')),
       deadline: asText(get('f-deadline')),
       followUpDate: asText(get('f-followup')),
@@ -1714,31 +1774,30 @@
       field('f-salary', 'Salary or salary range', textInput('f-salary', draft.salary, {
         placeholder: 'Leave blank if the advertisement does not say'
       })),
-      field('f-url', 'Job URL', textInput('f-url', draft.jobUrl, {
+      field('f-url', optionalFieldLabel('Job URL'), textInput('f-url', draft.jobUrl, {
         type: 'url', placeholder: 'https://…'
       }), 'Only http and https links are saved.'),
       field('f-deadline', 'Application deadline',
         textInput('f-deadline', draft.deadline, { type: 'date' })),
-      field('f-followup', 'Follow-up date',
+      field('f-followup', optionalFieldLabel('Follow-up date'),
         textInput('f-followup', draft.followUpDate, { type: 'date' }),
         'HirePath reminds you when this date arrives.'),
 
       field('f-qualifications', 'Educational qualifications',
-        listTextArea('f-qualifications', draft.qualifications, 3), 'One item per line.', true),
+        listTextArea('f-qualifications', draft.qualifications, 3,
+          'e.g. Bachelor’s degree in Computer Science'),
+        'Include degrees, diplomas, certifications, or minimum education.', true),
       field('f-experience', 'Experience requirements',
-        listTextArea('f-experience', draft.experienceRequirements, 3), 'One item per line.', true),
+        listTextArea('f-experience', draft.experienceRequirements, 3,
+          'e.g. 2+ years in customer support'),
+        'Include required years, roles, or relevant experience.', true),
       field('f-required', 'Required skills',
-        listTextArea('f-required', draft.requiredSkills, 4),
-        'One skill per line. These are compared with your profile skills.', true),
-      field('f-preferred', 'Preferred skills',
-        listTextArea('f-preferred', draft.preferredSkills, 3),
-        'Nice-to-have skills, kept separate from required skills.', true),
-      field('f-responsibilities', 'Job responsibilities',
-        listTextArea('f-responsibilities', draft.responsibilities, 4), 'One item per line.', true),
-      field('f-documents', 'Documents required',
-        listTextArea('f-documents', draft.documents, 3),
-        'Each document also becomes a checklist item.', true),
-      field('f-notes', 'Notes',
+        listTextArea('f-required', draft.requiredSkills, 4, 'e.g. JavaScript'),
+        'Add the core skills the employer expects; these are compared with your profile.', true),
+      field('f-documents', optionalFieldLabel('Documents required'),
+        listTextArea('f-documents', draft.documents, 3, 'e.g. Résumé or portfolio'),
+        'Add items such as a résumé, cover letter, portfolio, certificates, or references.', true),
+      field('f-notes', optionalFieldLabel('Notes'),
         textArea('f-notes', draft.notes, 3, 'Anything you want to remember about this application'),
         null, true),
 
@@ -1778,7 +1837,7 @@
               /* Rendered on the next tick, once the route has changed. */
               setTimeout(function () {
                 var input = $('#lookup-term');
-                var btn = $('#view .coach-ask-row .btn');
+                var btn = $('#quickwiki-search-button') || $('#view .coach-ask-row .btn');
                 if (input && btn) { input.value = t.term; runLookup(t.term, $('#lookup-status'), btn); }
               }, 60);
             }
@@ -4076,57 +4135,83 @@
   }
 
   function viewQuickwiki() {
-    var frag = document.createDocumentFragment();
-
-    frag.appendChild(h('div', { class: 'page-head' },
-      h('div', null,
-        h('p', { class: 'eyebrow' }, 'Quickwiki'),
-        h('h1', null, 'Look anything up on Wikipedia'),
-        h('p', { class: 'lede' },
-          'Search Wikipedia for any company, tool or industry term.'))
-    ));
-
     var status = statusLine('lookup-status');
     var input = textInput('lookup-term', lookupState.term, {
-      placeholder: 'e.g. Property management system, front office, hospitality industry',
+      placeholder: 'Search a company, skill, or industry',
       'aria-label': 'Search Wikipedia'
     });
-    input.className = 'coach-ask-input';
-    var button = h('button', { type: 'button', class: 'btn btn-primary btn-lg' }, 'Search');
+    input.className = 'quickwiki-search-input';
+    var button = h('button', {
+      id: 'quickwiki-search-button', type: 'button', class: 'btn btn-primary btn-lg'
+    }, 'Search');
     button.addEventListener('click', function () { runLookup(input.value, status, button); });
     input.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') { e.preventDefault(); runLookup(input.value, status, button); }
     });
 
-    var examples = ['Hospitality industry', 'Front office', 'Stakeholder', 'Onboarding', 'Accessibility'];
+    var examples = ['Hospitality', 'Front office', 'Onboarding', 'Accessibility'];
+    var categories = [
+      {
+        iconName: 'briefcase', title: 'Companies',
+        text: 'Learn what an employer does', query: 'Zoho Corporation'
+      },
+      {
+        iconName: 'bulb', title: 'Job skills',
+        text: 'Understand tools and concepts', query: 'JavaScript'
+      },
+      {
+        iconName: 'trending', title: 'Industries',
+        text: 'Explore sectors and terminology', query: 'Hospitality industry'
+      }
+    ];
 
-    frag.appendChild(h('section', { class: 'coach-ask' },
-      h('div', { class: 'coach-ask-head' },
-        h('span', { class: 'start-panel-icon' }, icon('compass')),
-        h('div', null,
-          h('p', { class: 'eyebrow' }, 'Wikipedia'),
-          h('h2', { class: 'coach-ask-title' },
-            h('label', { for: 'lookup-term' }, 'What would you like explained?')))),
-      h('div', { class: 'coach-ask-row' }, input, button),
-      h('p', { class: 'field-help' },
-        'Looking for the meaning of a single word instead? The dictionary lives on the ' +
-        'Prep Coach page.'),
-      h('div', { class: 'coach-examples' },
-        h('span', { class: 'coach-examples-label' }, 'Try:'),
-        examples.map(function (sample) {
+    var root = h('div', { class: 'quickwiki-page' },
+      h('header', { class: 'quickwiki-head' },
+        h('p', { class: 'eyebrow' }, 'Quickwiki'),
+        h('h1', null, 'Understand any topic, quickly'),
+        h('p', null, 'Search Wikipedia without leaving your preparation workspace.')),
+
+      h('section', { class: 'quickwiki-search-card', 'aria-labelledby': 'quickwiki-search-title' },
+        h('h2', { id: 'quickwiki-search-title' },
+          h('label', { for: 'lookup-term' }, 'What would you like to explore?')),
+        h('div', { class: 'quickwiki-search-row' },
+          h('div', { class: 'quickwiki-input-wrap' },
+            h('span', { class: 'quickwiki-input-icon', 'aria-hidden': 'true' }, icon('compass')),
+            input),
+          button),
+        h('div', { class: 'quickwiki-popular' },
+          h('span', null, 'Popular:'),
+          examples.map(function (sample) {
+            return h('button', {
+              type: 'button', class: 'quickwiki-chip',
+              onclick: function () { input.value = sample; runLookup(sample, status, button); }
+            }, sample);
+          })),
+        status),
+
+      h('section', { class: 'quickwiki-category-section', 'aria-labelledby': 'quickwiki-category-title' },
+        h('h2', { id: 'quickwiki-category-title' }, 'Explore by category'),
+        h('div', { class: 'quickwiki-category-grid' }, categories.map(function (category) {
           return h('button', {
-            type: 'button', class: 'coach-example',
-            onclick: function () { input.value = sample; runLookup(sample, status, button); }
-          }, sample);
-        })),
-      status));
+            type: 'button', class: 'quickwiki-category-card',
+            onclick: function () {
+              input.value = category.query;
+              runLookup(category.query, status, button);
+            }
+          },
+            h('span', { class: 'quickwiki-category-icon', 'aria-hidden': 'true' }, icon(category.iconName)),
+            h('span', { class: 'quickwiki-category-copy' },
+              h('strong', null, category.title),
+              h('span', null, category.text)),
+            h('span', { class: 'quickwiki-category-arrow', 'aria-hidden': 'true' }, '→'));
+        }))));
 
     if (lookupState.result) {
-      frag.appendChild(h('div', { class: 'section lookup-grid' }, wikiCard(lookupState.result)));
+      root.appendChild(h('div', { class: 'section lookup-grid quickwiki-result' }, wikiCard(lookupState.result)));
     }
 
     if (lookupState.error) {
-      frag.appendChild(h('div', { class: 'notice section' },
+      root.appendChild(h('div', { class: 'notice section quickwiki-result' },
         h('p', null, lookupState.error),
         (lookupState.suggestions && lookupState.suggestions.length)
           ? h('div', null,
@@ -4140,7 +4225,7 @@
           : null));
     }
 
-    return frag;
+    return root;
   }
 
   /**
