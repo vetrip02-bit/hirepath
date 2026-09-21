@@ -182,10 +182,20 @@ there is **no build command**.
 **Python (already installed on macOS and Linux):**
 
 ```bash
-cd hirepath && python3 -m http.server 4180
+cd hirepath && python3 serve.py
 ```
 
 Then open <http://localhost:4180>.
+
+`serve.py` is an ordinary static server with one difference: it sends
+`Cache-Control: no-store`. Python's built-in `python3 -m http.server` sends no cache headers at
+all, so browsers cache `app.js` and `styles.css` heuristically — you edit a file, reload, and
+still get the old build, which looks like a broken page rather than a caching problem. If you
+prefer the built-in server, use `python3 -m http.server 4180` and hard-reload
+(**Cmd/Ctrl + Shift + R**) after every edit.
+
+`index.html` also versions its assets (`app.js?v=2`), so a plain static host will serve fresh
+files to returning visitors after a deploy. Bump the number when you change a file.
 
 **Node, if you prefer:**
 
@@ -243,8 +253,10 @@ topic and add it again.
 4. Untick **Demo mode**.
 5. Press **Test connection** to confirm the key works.
 
-The default model is **`gemini-3.5-flash-lite`** and can be changed in the same panel if your key
-uses a different one.
+The default model is **`gemini-3.6-flash`** and can be changed in the same panel if your key uses
+a different one. HirePath previously defaulted to `gemini-3.5-flash-lite`; a browser still
+carrying that saved value is moved to the current default on load, because the old name now
+returns 404.
 
 **Errors are handled and explained in plain language**, never with a raw provider dump:
 
@@ -421,7 +433,7 @@ One key: **`hirepath-v2`**.
   "general": { "studyPlan": null },
   "settings": {
     "apiKey": "",
-    "model": "gemini-3.5-flash-lite",
+    "model": "gemini-3.6-flash",
     "demoMode": true,
     "notificationsEnabled": false
   },
@@ -456,6 +468,7 @@ private.*
 hirepath/
 ├── index.html      Static shell: onboarding, navigation, live regions, modal host
 ├── styles.css      Design system built from the logo's navy and teal, plus responsive rules
+├── serve.py        Static server for development, with caching disabled
 ├── gemini.js       Gemini REST client, prompts, JSON schemas, error mapping, Demo mode
 ├── lookup.js       Wikipedia + Wiktionary/dictionary clients (no API key needed)
 ├── app.js          State, validation, routing, all views, time engine, reminders
@@ -561,6 +574,9 @@ Work through these with Demo mode on unless a test says otherwise.
 | 54 | **Personal task completed** — add your own task on Today's Plan and tick it off | Today's Plan still renders; "Completed today" lists it as "Your own task" rather than crashing on a missing job |
 | 55 | **Personal tasks with no jobs saved** — add a task before saving any opportunity | The dashboard shows "Your tasks for today" underneath the getting-started panel |
 | 56 | **Copy and spacing** — read any page | Help text is one short line per control, and no page carries an explanatory paragraph longer than a sentence or two |
+| 57 | **Unsaved draft does not trap the page** — analyse an advertisement, leave without saving, then return to Add Opportunity | The three input tabs are still shown above the draft; picking one asks before discarding and returns you to the paste box |
+| 58 | **No stale files** — edit `app.js`, reload | The change appears without a hard reload when served by `serve.py` |
+| 59 | **Default model** — clear all data, open Settings | The model field reads `gemini-3.6-flash`, and a browser still holding the old `gemini-3.5-flash-lite` is migrated to it on load |
 
 ### Verified during development
 

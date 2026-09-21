@@ -296,8 +296,8 @@
       general: { studyPlan: null },
       settings: {
         apiKey: '',
-        model: (window.Gemini && window.Gemini.DEFAULT_MODEL) || 'gemini-3.5-flash-lite',
-        demoMode: true,
+        model: (window.Gemini && window.Gemini.DEFAULT_MODEL) || 'gemini-3.6-flash',
+        demoMode: false,
         notificationsEnabled: false
       },
       lastNotificationDate: null
@@ -497,10 +497,15 @@
     };
 
     var s = raw.settings && typeof raw.settings === 'object' ? raw.settings : {};
+    var savedModel = asText(s.model).slice(0, 80);
+    /* Anyone still carrying the previous default is moved to the current one:
+       a saved value would otherwise pin them to a model that returns 404. */
+    var usedPreviousDefault = savedModel === 'gemini-3.5-flash-lite';
+    if (usedPreviousDefault) { savedModel = ''; }
     base.settings = {
       apiKey: asText(s.apiKey).slice(0, 200),
-      model: asText(s.model).slice(0, 80) || base.settings.model,
-      demoMode: s.demoMode !== false,
+      model: savedModel || base.settings.model,
+      demoMode: usedPreviousDefault ? false : s.demoMode === true,
       notificationsEnabled: s.notificationsEnabled === true
     };
 
@@ -1965,6 +1970,44 @@
     /* ---------------- review mode ---------------- */
     if (addState.mode === 'review' && addState.draft) {
       var missing = missingFieldsIn(addState.draft);
+
+      /* An unsaved draft used to take over this page for the rest of the
+         session: coming back to "Add Opportunity" showed the review form with
+         no way back to the paste box except a button far below the fold. The
+         tabs stay on screen so the three input methods are always one click
+         away, and a draft is never discarded without asking. */
+      function leaveReview(goToTab) {
+        confirmDialog({
+          title: 'Discard this draft?',
+          message: 'The extracted details have not been saved yet. Starting again will lose them.',
+          confirmText: 'Discard and start again', danger: true
+        }).then(function (ok) {
+          if (!ok) { return; }
+          addState.draft = null;
+          addState.mode = 'input';
+          if (goToTab) { addState.tab = goToTab; }
+          render();
+        });
+      }
+
+      /* Plain buttons, not tabs: in review mode there is no tab panel to
+         control, so tab semantics would be wrong for a screen reader. */
+      frag.appendChild(h('div', { class: 'tabs' },
+        [['text', '1. Paste advertisement text'],
+         ['image', '2. Upload advertisement image'],
+         ['manual', '3. Enter information manually']].map(function (pair) {
+          return h('button', {
+            type: 'button', class: 'tab',
+            onclick: function () { leaveReview(pair[0]); }
+          }, pair[1]);
+        })));
+
+      frag.appendChild(h('div', { class: 'notice', role: 'status' },
+        h('p', null,
+          h('strong', null, 'Unsaved draft. '),
+          'You are reviewing details from an earlier analysis. Pick a tab above to start a ' +
+          'different job, or save this one below.')));
+
       frag.appendChild(h('div', { class: 'notice warn', role: 'status' },
         h('p', null, 'Gemini can make mistakes. Review the extracted information before saving.')));
 

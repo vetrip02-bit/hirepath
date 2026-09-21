@@ -11,7 +11,7 @@
   'use strict';
 
   var ENDPOINT_BASE = 'https://generativelanguage.googleapis.com/v1beta/models/';
-  var DEFAULT_MODEL = 'gemini-3.5-flash-lite';
+  var DEFAULT_MODEL = 'gemini-3.6-flash';
   var REQUEST_TIMEOUT_MS = 60000;
 
   /* ---------------------------------------------------------------------- */
@@ -229,11 +229,6 @@
     var apiKey = (settings.apiKey || '').trim();
     var model = (settings.model || DEFAULT_MODEL).trim() || DEFAULT_MODEL;
 
-    if (!apiKey) {
-      return Promise.reject(new GeminiError(
-        'No Gemini API key saved. Open Settings to add a key, or turn on Demo mode to try HirePath without one.',
-        'no-key'));
-    }
     if (typeof fetch !== 'function') {
       return Promise.reject(new GeminiError('This browser does not support fetch().', 'unsupported'));
     }
@@ -254,7 +249,14 @@
     }
 
     var payload = JSON.stringify(body);
-    var url = ENDPOINT_BASE + encodeURIComponent(model) + ':generateContent';
+    /* A manually saved key keeps the original direct-browser behaviour. When
+       the field is empty, the hosted app uses its server-side default key so
+       the credential never appears in the public JavaScript bundle. */
+    var url = apiKey
+      ? ENDPOINT_BASE + encodeURIComponent(model) + ':generateContent'
+      : '/api/gemini';
+    var headers = { 'Content-Type': 'application/json' };
+    if (apiKey) { headers['x-goog-api-key'] = apiKey; }
 
     /* Rate limits (429) and overload (503) are both temporary, so they are
        retried automatically with backoff before the user ever sees an error.
@@ -266,10 +268,7 @@
 
       return fetch(url, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': apiKey
-        },
+        headers: headers,
         body: payload,
         signal: controller ? controller.signal : undefined
       }).then(function (res) {
