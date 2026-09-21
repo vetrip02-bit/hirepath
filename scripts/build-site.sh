@@ -13,6 +13,7 @@ cp "$project_dir/app.js" "$build_dir/client/app.js"
 cp "$project_dir/gemini.js" "$build_dir/client/gemini.js"
 cp "$project_dir/lookup.js" "$build_dir/client/lookup.js"
 cp "$project_dir/assets/hirepath-logo.png" "$build_dir/client/assets/hirepath-logo.png"
+cp "$project_dir/assets/og.png" "$build_dir/client/assets/og.png"
 cp "$project_dir/server/index.js" "$build_dir/server/index.js"
 
 printf 'Built HirePath for Sites at %s\n' "$build_dir"
