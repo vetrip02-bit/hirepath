@@ -219,16 +219,6 @@ input[type="checkbox"] { width: 1.05rem; height: 1.05rem; accent-color: var(--te
 }
 .nav-cta:hover { background: linear-gradient(135deg, var(--navy-700), var(--teal-700)); }
 
-.nav-toggle {
-  display: none; margin-left: auto; background: var(--surface);
-  border: 1px solid var(--line); border-radius: var(--radius);
-  width: 46px; height: 44px; cursor: pointer; align-items: center; justify-content: center;
-}
-.nav-toggle-bars { display: block; width: 20px; }
-.nav-toggle-bars span {
-  display: block; height: 2px; background: var(--navy-800); border-radius: 2px; margin: 4px 0;
-}
-
 /* ============================== LAYOUT =============================== */
 .main { flex: 1 1 auto; min-height: 0; }
 .view { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: .65rem 1.25rem 1.1rem; }
@@ -979,6 +969,18 @@ h1.with-icon, h2.with-icon, h3.with-icon {
 .menu-toggle:hover { border-color: var(--teal-600); background: var(--teal-050); }
 .menu-toggle[aria-expanded="true"] {
   border-color: var(--teal-600); background: var(--teal-100);
+}
+.profile-menu-icon {
+  position: relative; width: 23px; height: 23px; display: block;
+  color: var(--navy-800);
+}
+.profile-menu-icon-head {
+  position: absolute; top: 1px; left: 50%; width: 8px; height: 8px;
+  border-radius: 50%; background: currentColor; transform: translateX(-50%);
+}
+.profile-menu-icon-body {
+  position: absolute; left: 50%; bottom: 1px; width: 18px; height: 10px;
+  border-radius: 9px 9px 4px 4px; background: currentColor; transform: translateX(-50%);
 }
 
 .app-menu {

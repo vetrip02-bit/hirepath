@@ -4212,9 +4212,6 @@
      16. TODAY'S PLAN
      ====================================================================== */
 
-  /* Which half of "Plan your day" is showing: written by hand, or generated. */
-  var todayMethod = 'own';
-
   function viewToday() {
     var today = todayISO();
     var entries = allTasksForDate(today);
@@ -4253,7 +4250,7 @@
           : 'No sessions to complete today.')
     ));
 
-    /* ---- add a task by hand: the no-AI half of Today's Plan ---- */
+    /* ---- add a task by hand ---- */
     var ownName = textInput('own-task-name', '', {
       placeholder: 'e.g. Rewrite my CV summary', 'aria-label': 'Task name'
     });
@@ -4303,79 +4300,19 @@
       if (e.key === 'Enter') { e.preventDefault(); addOwnTask(); }
     });
 
-    /* ---- the generated half: build a job's schedule from its topics ---- */
-    var genStatus = statusLine('gen-schedule-status');
-    var schedulable = state.opportunities.filter(function (o) {
-      return o.studyPlan && o.studyPlan.topics.some(function (t) { return !t.completed; });
-    });
-    var genJob = selectInput('gen-job', schedulable.map(function (o) {
-      return { value: o.id, label: o.role + (o.company ? ' — ' + o.company : '') };
-    }), schedulable.length ? schedulable[0].id : '');
-
-    var genBtn = h('button', { type: 'button', class: 'btn btn-primary' }, 'Generate with Gemini');
-    genBtn.addEventListener('click', function () {
-      var opp = findOpp(genJob.value);
-      if (!opp) { setStatus(genStatus, 'Choose a job first.', 'error'); return; }
-      buildScheduleFor(opp, true, genStatus, genBtn);
-    });
-    var genOwnBtn = h('button', { type: 'button', class: 'btn btn-secondary' }, 'Order it myself');
-    genOwnBtn.addEventListener('click', function () {
-      var opp = findOpp(genJob.value);
-      if (!opp) { setStatus(genStatus, 'Choose a job first.', 'error'); return; }
-      buildScheduleFor(opp, false, genStatus, genOwnBtn);
-    });
-
-    function methodTab(id, label) {
-      return h('button', {
-        type: 'button', class: 'tab', role: 'tab', id: 'planmode-' + id,
-        'aria-selected': todayMethod === id ? 'true' : 'false',
-        'aria-controls': 'planpanel-' + id,
-        tabindex: todayMethod === id ? '0' : '-1',
-        onclick: function () { todayMethod = id; render(); }
-      }, label);
-    }
-
-    var panel = h('div', {
-      class: 'mt-1', role: 'tabpanel', id: 'planpanel-' + todayMethod,
-      'aria-labelledby': 'planmode-' + todayMethod
-    });
-
-    if (todayMethod === 'own') {
-      append(panel, [
-        h('p', { class: 'small soft' },
-          'A task can stand alone or be attached to a job.'),
-        h('div', { class: 'own-task-grid' },
-          field('own-task-name', 'Task', ownName),
-          field('own-task-date', 'Date', ownDate),
-          field('own-task-min', 'Minutes', ownMinutes),
-          field('own-task-job', 'Link to a job (optional)', ownJob)),
-        h('div', { class: 'form-actions' },
-          h('button', { type: 'button', class: 'btn btn-primary', onclick: addOwnTask }, 'Add task')),
-        ownStatus
-      ]);
-    } else {
-      append(panel, schedulable.length
-        ? [
-            h('p', { class: 'small soft' },
-              'Turn a job’s topics into dated sessions, starting today.'),
-            h('div', { class: 'own-task-grid' },
-              field('gen-job', 'Which job?', genJob)),
-            h('div', { class: 'form-actions' }, genBtn, genOwnBtn),
-            genStatus
-          ]
-        : [
-            h('p', { class: 'small soft' }, 'A job needs a plan first.'),
-            h('a', { class: 'btn btn-secondary', href: '#/coach' }, 'Open the Prep Coach')
-          ]);
-    }
-
     frag.appendChild(h('section', { class: 'card own-task-card' },
       h('div', { class: 'card-head' },
-        iconHeading('h2', 'calendar', 'Plan your day'),
-        h('div', { class: 'tabs', role: 'tablist', 'aria-label': 'How to plan today' },
-          methodTab('own', 'Write it myself'),
-          methodTab('generated', 'Generate from a job'))),
-      panel));
+        iconHeading('h2', 'calendar', 'Plan your day')),
+      h('p', { class: 'small soft' },
+        'A task can stand alone or be attached to a job.'),
+      h('div', { class: 'own-task-grid' },
+        field('own-task-name', 'Task', ownName),
+        field('own-task-date', 'Date', ownDate),
+        field('own-task-min', 'Minutes', ownMinutes),
+        field('own-task-job', 'Link to a job (optional)', ownJob)),
+      h('div', { class: 'form-actions' },
+        h('button', { type: 'button', class: 'btn btn-primary', onclick: addOwnTask }, 'Add task')),
+      ownStatus));
 
     frag.appendChild(h('section', { class: 'card' },
       h('div', { class: 'card-head' }, h('h2', null, 'Scheduled for today')),

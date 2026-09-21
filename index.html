@@ -92,8 +92,11 @@
     <div class="topbar-inner">
       <button id="menu-toggle" class="menu-toggle" aria-expanded="false"
               aria-controls="app-menu" aria-haspopup="true">
-        <span class="nav-toggle-bars" aria-hidden="true"><span></span><span></span><span></span></span>
-        <span class="sr-only">Open menu</span>
+        <span class="profile-menu-icon" aria-hidden="true">
+          <span class="profile-menu-icon-head"></span>
+          <span class="profile-menu-icon-body"></span>
+        </span>
+        <span class="sr-only">Open profile menu</span>
       </button>
 
       <a class="brand" href="#/dashboard" aria-label="HirePath home">
@@ -109,7 +112,7 @@
 
       <a class="nav-cta" href="#/add" data-nav="add">+ Add Opportunity</a>
 
-      <!-- Menu beside the logo: account pages always, plus the primary links
+      <!-- Profile menu beside the logo: account pages always, plus the primary links
            on small screens where the navigation bar itself is hidden. -->
       <div id="app-menu" class="app-menu" role="menu" aria-labelledby="menu-toggle" hidden>
         <div class="menu-section menu-primary">
