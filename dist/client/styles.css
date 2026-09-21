@@ -929,6 +929,130 @@ h1.with-icon, h2.with-icon, h3.with-icon {
   .coach-empty, .coach-preview { padding: .85rem; }
 }
 
+/* ================== PREP COACH — FOCUSED BUILDER =================== */
+.coach-page-head { padding-top: 1.35rem; margin-bottom: .9rem; }
+.coach-page-head h1 {
+  margin-bottom: .3rem; font-size: clamp(2rem, 3.5vw, 2.8rem);
+  letter-spacing: -.035em;
+}
+.coach-page-head .lede { font-size: 1.05rem; }
+
+.coach-builder-grid {
+  display: grid; grid-template-columns: minmax(0, 1.85fr) minmax(300px, 1fr);
+  gap: 1rem; align-items: stretch; margin-top: 1rem;
+}
+.coach-builder-card,
+.coach-includes {
+  background: rgba(255,255,255,.97); border: 1px solid var(--teal-200);
+  border-radius: 18px; box-shadow: 0 12px 32px rgba(1,67,143,.08);
+}
+.coach-builder-card { padding: 1.4rem; }
+.coach-builder-card > h2,
+.coach-includes > h2 {
+  font-size: 1.55rem; letter-spacing: -.02em; margin-bottom: 1rem;
+}
+
+.coach-mode-switch {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+  background: var(--surface-2);
+}
+.coach-mode-option {
+  min-height: 58px; padding: .7rem 1rem; border: 0; border-radius: 11px;
+  background: transparent; color: var(--ink-soft); cursor: pointer;
+  font: inherit; font-weight: 700; display: inline-flex; align-items: center;
+  justify-content: center; gap: .6rem;
+}
+.coach-mode-option + .coach-mode-option { border-left: 1px solid var(--line); }
+.coach-mode-option .icon { width: 1.25rem; height: 1.25rem; }
+.coach-mode-option:hover { color: var(--navy-800); background: #fff; }
+.coach-mode-option.is-active {
+  color: var(--teal-700); background: linear-gradient(135deg, #f7fbff, var(--teal-100));
+  box-shadow: inset 0 0 0 1px var(--teal-500);
+}
+
+.coach-mode-panel { margin-top: 1rem; }
+.coach-builder-custom .coach-ask-row,
+.coach-builder-action-row { display: flex; gap: .65rem; align-items: stretch; }
+.coach-builder-custom .coach-ask-input,
+.coach-builder-action-row select {
+  flex: 1 1 auto; min-width: 0; min-height: 52px; font-size: 1rem;
+}
+.coach-builder-custom .coach-ask-row .btn,
+.coach-builder-action-row .btn { flex: 0 0 auto; min-width: 175px; }
+.coach-builder-custom .coach-examples { margin-top: 1rem; }
+.coach-builder-custom .coach-example {
+  border-style: solid; background: var(--teal-050); padding-inline: .8rem;
+}
+.coach-builder-custom .status-msg { margin-bottom: 0; }
+.coach-job-content > p,
+.coach-job-empty > p { margin-bottom: .8rem; }
+
+.coach-includes {
+  padding: 1.4rem; display: flex; flex-direction: column;
+}
+.coach-includes ul {
+  list-style: none; margin: 0; padding: 0; display: grid; gap: .7rem;
+}
+.coach-includes li {
+  display: flex; align-items: center; gap: .8rem;
+  color: var(--navy-700); font-weight: 650;
+}
+.coach-includes-icon,
+.coach-definition-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  flex: 0 0 auto; width: 42px; height: 42px; border-radius: 50%;
+  color: var(--teal-700); background: var(--teal-050);
+}
+.coach-includes-icon .icon,
+.coach-definition-icon .icon { width: 1.2rem; height: 1.2rem; }
+.coach-includes-foot {
+  margin: auto 0 0; padding-top: .9rem; border-top: 1px solid var(--line);
+  color: var(--ink-muted); font-size: .85rem;
+}
+
+.coach-definition-bar {
+  display: grid; grid-template-columns: minmax(250px, .72fr) minmax(0, 1.28fr);
+  gap: .8rem 1.1rem; align-items: center; margin-top: 1rem;
+  padding: 1rem 1.25rem; border-color: var(--teal-200);
+}
+.coach-definition-heading { display: flex; align-items: center; gap: .8rem; }
+.coach-definition-heading h2 { margin: 0 0 .1rem; font-size: 1.08rem; }
+.coach-definition-heading p { margin: 0; color: var(--ink-soft); font-size: .88rem; }
+.coach-definition-search { display: flex; align-items: stretch; gap: .65rem; }
+.coach-definition-search input { flex: 1 1 auto; min-width: 0; }
+.coach-definition-search .btn { flex: 0 0 auto; min-width: 110px; }
+.coach-definition-bar > .status-msg {
+  grid-column: 2; min-height: 0; margin: -.2rem 0 0;
+}
+.coach-definition-bar > .status-msg:empty { display: none; }
+.coach-definition-result { grid-column: 1 / -1; }
+.coach-definition-result.is-error { color: var(--danger-700); margin: 0; }
+
+@media (max-width: 900px) {
+  .coach-builder-grid { grid-template-columns: minmax(0, 1fr); }
+  .coach-includes ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .coach-includes-foot { margin-top: 1rem; }
+  .coach-definition-bar { grid-template-columns: minmax(220px, .8fr) minmax(0, 1.2fr); }
+}
+
+@media (max-width: 640px) {
+  .coach-page-head { padding-top: .7rem; }
+  .coach-page-head h1 { font-size: 1.75rem; }
+  .coach-builder-card, .coach-includes { padding: 1rem; }
+  .coach-builder-card > h2, .coach-includes > h2 { font-size: 1.3rem; }
+  .coach-mode-option { padding-inline: .55rem; font-size: .88rem; }
+  .coach-builder-custom .coach-ask-row,
+  .coach-builder-action-row,
+  .coach-definition-search { flex-direction: column; }
+  .coach-builder-custom .coach-ask-row .btn,
+  .coach-builder-action-row .btn,
+  .coach-definition-search .btn { width: 100%; min-width: 0; }
+  .coach-includes ul { grid-template-columns: minmax(0, 1fr); }
+  .coach-definition-bar { grid-template-columns: minmax(0, 1fr); }
+  .coach-definition-bar > .status-msg { grid-column: 1; }
+}
+
 /* ===================== LOOK UP (Wikipedia + Dictionary) ============== */
 .lookup-grid {
   display: grid; gap: .75rem;
