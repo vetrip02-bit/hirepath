@@ -1286,14 +1286,9 @@ h1.with-icon, h2.with-icon, h3.with-icon {
   margin-bottom: 1.15rem; color: var(--navy-900); font-size: 1.75rem; letter-spacing: -.02em;
 }
 .quickwiki-search-row { display: grid; grid-template-columns: minmax(0, 1fr) 180px; gap: .8rem; }
-.quickwiki-input-wrap { position: relative; min-width: 0; }
-.quickwiki-input-icon {
-  position: absolute; left: 1.15rem; top: 50%; z-index: 1;
-  display: inline-flex; color: var(--teal-700); font-size: 1.55rem;
-  transform: translateY(-50%); pointer-events: none;
-}
+.quickwiki-input-wrap { min-width: 0; }
 .quickwiki-search-input {
-  width: 100%; min-height: 64px; padding: .85rem 1rem .85rem 3.5rem;
+  width: 100%; min-height: 64px; padding: .85rem 1rem;
   border-radius: 12px; background: #fff; font-size: 1rem;
 }
 .quickwiki-search-row .btn { min-height: 64px; font-size: 1.05rem; }
