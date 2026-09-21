@@ -2731,71 +2731,89 @@
     );
   }
 
+  var coachHubMode = 'custom';
+
+  function coachModeButton(id, iconName, label) {
+    var active = coachHubMode === id;
+    return h('button', {
+      type: 'button',
+      class: 'coach-mode-option' + (active ? ' is-active' : ''),
+      'aria-pressed': active ? 'true' : 'false',
+      onclick: function () { coachHubMode = id; render(); }
+    }, icon(iconName), label);
+  }
+
+  function coachOpportunityChooser() {
+    if (!state.opportunities.length) {
+      return h('div', { class: 'coach-job-empty' },
+        h('p', { class: 'soft' },
+          'Save an opportunity first, then HirePath can build a plan from its requirements.'),
+        h('a', { class: 'btn btn-primary btn-lg', href: '#/add' },
+          '+ Add Opportunity'));
+    }
+
+    var job = selectInput('coach-job-select', state.opportunities.map(function (opp) {
+      return { value: opp.id, label: opp.role + (opp.company ? ' — ' + opp.company : '') };
+    }), state.opportunities[0].id);
+    job.setAttribute('aria-label', 'Saved opportunity');
+
+    var open = h('button', {
+      type: 'button', class: 'btn btn-primary btn-lg',
+      onclick: function () { go('/coach/' + job.value); }
+    }, 'Open my plan');
+
+    return h('div', { class: 'coach-job-content' },
+      h('p', { class: 'soft' },
+        'Choose a saved opportunity to review or build its focused preparation plan.'),
+      h('div', { class: 'coach-builder-action-row' }, job, open));
+  }
+
+  function coachPlanIncludes() {
+    var parts = [
+      { iconName: 'flag', label: 'Clear overview' },
+      { iconName: 'sparkle', label: 'Worked example' },
+      { iconName: 'bulb', label: 'Interview tips' },
+      { iconName: 'target', label: 'Quick quiz' }
+    ];
+    return h('aside', { class: 'coach-includes', 'aria-label': 'What your plan includes' },
+      h('h2', null, 'Your plan includes'),
+      h('ul', null, parts.map(function (part) {
+        return h('li', null,
+          h('span', { class: 'coach-includes-icon', 'aria-hidden': 'true' }, icon(part.iconName)),
+          h('span', null, part.label));
+      })),
+      h('p', { class: 'coach-includes-foot' }, 'Organized into a day-by-day schedule.'));
+  }
+
+  function coachBuilder() {
+    return h('section', { class: 'section coach-builder-grid' },
+      h('article', { class: 'coach-builder-card' },
+        h('h2', null, 'What do you want to prepare for?'),
+        h('div', { class: 'coach-mode-switch', role: 'group', 'aria-label': 'Preparation source' },
+          coachModeButton('job', 'briefcase', 'Job opportunity'),
+          coachModeButton('custom', 'sparkle', 'Custom topic')),
+        h('div', { class: 'coach-mode-panel' },
+          coachHubMode === 'job'
+            ? coachOpportunityChooser()
+            : customTopicForm(coachContext('general'), { embedded: true }))),
+      coachPlanIncludes());
+  }
+
   function viewCoachHub() {
     var frag = document.createDocumentFragment();
-    var hasOpportunities = state.opportunities.length > 0;
 
-    frag.appendChild(h('div', { class: 'page-head' },
+    frag.appendChild(h('div', { class: 'page-head coach-page-head' },
       h('div', null,
         h('p', { class: 'eyebrow' }, 'Prep Coach'),
-        h('h1', null, 'Learn exactly what each job asks for'),
+        h('h1', null, 'Build a focused interview prep plan'),
         h('p', { class: 'lede' },
-          'Turn a job advertisement into an ordered learning path with lessons and quizzes.'))
+          'Choose a saved opportunity or start with any topic.'))
     ));
 
     /* append() skips null, which demoModeNotice() returns when Demo mode is off. */
     append(frag, demoModeNotice());
-
-    if (hasOpportunities) {
-      frag.appendChild(h('section', { class: 'section' },
-        iconHeading('h2', 'compass', 'Your opportunities'),
-        h('div', { class: 'opp-list' }, state.opportunities.map(function (opp) {
-          var plan = planProgress(opp);
-          var open = function () { go('/coach/' + opp.id); };
-          return h('article', {
-            class: 'opp-card', tabindex: '0', role: 'link',
-            'aria-label': 'Open the preparation plan for ' + opp.role,
-            onclick: open,
-            onkeydown: function (e) {
-              if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
-            }
-          },
-            h('h3', { class: 'opp-role' }, opp.role),
-            h('p', { class: 'opp-company' }, opp.company || 'No company recorded'),
-            h('div', { class: 'opp-meta' },
-              opp.studyPlan
-                ? badge(plan.done + ' of ' + plan.total + ' topics done', 'teal')
-                : badge('No plan yet', 'neutral'),
-              deadlineBadge(opp.deadline)),
-            progressBar(plan.done, plan.total, 'Preparation progress'));
-        }))
-      ));
-    } else {
-      /* Compact, branded empty state sitting beside a preview of the output,
-         so the page explains itself without a tall placeholder card.
-         The prominent "+ Add Opportunity" lives in the navigation bar, so this
-         one is deliberately quiet. */
-      frag.appendChild(h('section', { class: 'section coach-empty-grid' },
-        h('article', { class: 'coach-empty' },
-          h('div', { class: 'coach-empty-head' },
-            h('span', { class: 'start-panel-icon' }, icon('briefcase')),
-            h('div', null,
-              h('p', { class: 'eyebrow' }, 'No job plans yet'),
-              h('h2', { class: 'coach-empty-title' }, 'Coach a real vacancy'))),
-          h('p', { class: 'coach-empty-text' },
-            'Save a job advertisement and the Coach works from its requirements.'),
-          h('a', { class: 'btn btn-sm btn-secondary', href: '#/add' },
-            'Add an opportunity', h('span', { 'aria-hidden': 'true' }, '→')),
-          h('p', { class: 'coach-empty-foot' },
-            'Or learn any topic you like below — no job needed.')),
-        coachPreview()
-      ));
-    }
-
-    /* Custom learning. On this page it is the main action, so it gets the
-       prominent panel treatment rather than a small field at the bottom. */
-    /* Custom topic and dictionary, paired on one row. */
-    frag.appendChild(learningToolsRow(coachContext('general'), { prominent: true }));
+    frag.appendChild(coachBuilder());
+    frag.appendChild(dictionaryPanel({ compact: true }));
 
     /* Saved general topics, listed only once some exist. */
     var generalPlan = state.general.studyPlan;
@@ -2831,18 +2849,25 @@
   function customTopicForm(ctx, options) {
     options = options || {};
     var status = statusLine('custom-topic-status-' + ctx.id);
-    var input = textInput('custom-topic-' + ctx.id, '', {
-      placeholder: options.prominent
+    var inputAttrs = {
+      placeholder: options.embedded
+        ? 'e.g. JavaScript promises'
+        : options.prominent
         ? 'Type any topic — for example, JavaScript promises'
-        : 'e.g. JavaScript promises, Git branches, CSS Grid, how to explain my final-year project',
-      'aria-describedby': 'custom-topic-help-' + ctx.id
-    });
-    if (options.prominent) { input.className = 'coach-ask-input'; }
+        : 'e.g. JavaScript promises, Git branches, CSS Grid, how to explain my final-year project'
+    };
+    if (options.embedded) {
+      inputAttrs['aria-label'] = 'Custom topic';
+    } else {
+      inputAttrs['aria-describedby'] = 'custom-topic-help-' + ctx.id;
+    }
+    var input = textInput('custom-topic-' + ctx.id, '', inputAttrs);
+    if (options.prominent || options.embedded) { input.className = 'coach-ask-input'; }
 
     var button = h('button', {
       type: 'button',
-      class: 'btn btn-primary' + (options.prominent ? ' btn-lg' : '')
-    }, options.prominent ? 'Write my lesson' : 'Create lesson');
+      class: 'btn btn-primary' + (options.prominent || options.embedded ? ' btn-lg' : '')
+    }, options.embedded ? 'Create my plan' : (options.prominent ? 'Write my lesson' : 'Create lesson'));
 
     function submit() {
       var topicName = asText(input.value);
@@ -2889,9 +2914,12 @@
     });
 
     /* Example chips double as an explanation of what can be asked for. */
+    var exampleTopics = options.embedded
+      ? ['JavaScript', 'REST APIs', 'CSS Grid', 'Communication']
+      : CUSTOM_TOPIC_EXAMPLES.slice(0, options.prominent ? 5 : 3);
     var examples = h('div', { class: 'coach-examples' },
-      h('span', { class: 'coach-examples-label' }, 'Try:'),
-      CUSTOM_TOPIC_EXAMPLES.slice(0, options.prominent ? 5 : 3).map(function (sample) {
+      h('span', { class: 'coach-examples-label' }, options.embedded ? 'Popular:' : 'Try:'),
+      exampleTopics.map(function (sample) {
         return h('button', {
           type: 'button', class: 'coach-example',
           onclick: function () {
@@ -2905,6 +2933,13 @@
     var help = h('p', {
       class: 'field-help', id: 'custom-topic-help-' + ctx.id
     }, 'It does not have to appear in a job advertisement.');
+
+    if (options.embedded) {
+      return h('div', { class: 'coach-builder-custom' },
+        h('div', { class: 'coach-ask-row' }, input, button),
+        examples,
+        status);
+    }
 
     if (!options.prominent) {
       return h('div', null,
@@ -4149,13 +4184,16 @@
    * Dictionary panel for the Prep Coach page. Independent of Gemini, so
    * it keeps working when the quota is spent or no key has been added.
    */
-  function dictionaryPanel() {
+  function dictionaryPanel(options) {
+    options = options || {};
     var status = statusLine('dict-status');
     var input = textInput('dict-word', dictState.word, {
       placeholder: 'e.g. hospitality, stakeholder, liaise',
       'aria-label': 'Word to define'
     });
-    var button = h('button', { type: 'button', class: 'btn btn-primary' }, 'Define');
+    var button = h('button', {
+      type: 'button', class: options.compact ? 'btn btn-secondary btn-lg' : 'btn btn-primary'
+    }, 'Define');
 
     function run(word) {
       var q = asText(word);
@@ -4184,6 +4222,19 @@
     });
 
     var samples = ['Hospitality', 'Stakeholder', 'Liaise', 'Proficiency'];
+
+    if (options.compact) {
+      return h('section', { class: 'section card coach-definition-bar' },
+        h('div', { class: 'coach-definition-heading' },
+          h('span', { class: 'coach-definition-icon', 'aria-hidden': 'true' }, icon('bulb')),
+          h('div', null,
+            h('h2', null, 'Quick definition'),
+            h('p', null, 'Look up a word while you study.'))),
+        h('div', { class: 'coach-definition-search' }, input, button),
+        status,
+        dictState.error ? h('p', { class: 'small coach-definition-result is-error' }, dictState.error) : null,
+        dictState.result ? h('div', { class: 'dict-result coach-definition-result' }, dictBody(dictState.result)) : null);
+    }
 
     return h('section', { class: 'card dict-panel' },
       h('div', { class: 'card-head' },
