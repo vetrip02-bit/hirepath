@@ -1,0 +1,8 @@
+{
+  "name": "hirepath",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "bash scripts/build-site.sh"
+  }
+}

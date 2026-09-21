@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HirePath — Job application notebook &amp; preparation coach</title>
+<meta name="description" content="HirePath saves job opportunities, explains job advertisements, tracks deadlines and builds a preparation plan for you." />
+<link rel="icon" href="assets/hirepath-logo.png" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<!-- ============ ONBOARDING ============ -->
+<div id="onboarding" class="onboarding" hidden>
+  <div class="onboarding-card">
+    <div class="onboarding-brand">
+      <img src="assets/hirepath-logo.png" alt="HirePath" class="onboarding-logo" />
+    </div>
+    <h1 class="onboarding-title">Your path to the right job, one step at a time.</h1>
+    <p class="onboarding-sub">
+      Tell us a little about yourself so your plan fits your time.
+    </p>
+    <p class="privacy-note">
+      <span aria-hidden="true">&#128274;</span>
+      Your profile stays in this browser only, and you can clear it at any time.
+    </p>
+
+    <form id="onboarding-form" class="form-grid" novalidate>
+      <div class="field">
+        <label for="ob-name">Name <span class="req" aria-hidden="true">*</span></label>
+        <input id="ob-name" name="name" type="text" autocomplete="name" required
+               aria-describedby="ob-name-err" placeholder="e.g. Vetri" />
+        <p class="field-error" id="ob-name-err" role="alert"></p>
+      </div>
+
+      <div class="field">
+        <label for="ob-age">Age <span class="optional">(optional)</span></label>
+        <input id="ob-age" name="age" type="number" min="14" max="100" inputmode="numeric"
+               aria-describedby="ob-age-help" placeholder="e.g. 22" />
+        <p class="field-help" id="ob-age-help">Optional.</p>
+      </div>
+
+      <div class="field">
+        <label for="ob-education">Educational qualification</label>
+        <input id="ob-education" name="education" type="text" list="education-list"
+               placeholder="e.g. B.E. Computer Science" />
+        <datalist id="education-list">
+          <option value="High School"></option>
+          <option value="Diploma"></option>
+          <option value="Bachelor's Degree"></option>
+          <option value="Master's Degree"></option>
+          <option value="PhD"></option>
+        </datalist>
+      </div>
+
+      <div class="field">
+        <label for="ob-field">Field of study</label>
+        <input id="ob-field" name="fieldOfStudy" type="text" placeholder="e.g. Computer Science" />
+      </div>
+
+      <div class="field field-wide">
+        <label for="ob-skills">Current skills</label>
+        <input id="ob-skills" name="skills" type="text"
+               aria-describedby="ob-skills-help" placeholder="e.g. HTML, CSS, JavaScript, SQL" />
+        <p class="field-help" id="ob-skills-help">Separate each skill with a comma.</p>
+      </div>
+
+      <div class="field">
+        <label for="ob-minutes">Daily preparation time (minutes)</label>
+        <input id="ob-minutes" name="dailyMinutes" type="number" min="10" max="600" step="5"
+               value="60" inputmode="numeric" />
+      </div>
+
+      <div class="field">
+        <label for="ob-reminder">Preferred reminder time</label>
+        <input id="ob-reminder" name="reminderTime" type="time" value="19:00" />
+      </div>
+
+      <div class="form-actions field-wide">
+        <button type="submit" class="btn btn-primary btn-lg">Start using HirePath</button>
+      </div>
+    </form>
+    <p class="onboarding-foot">
+      Demo mode is on by default, so you can try everything without a key.
+    </p>
+  </div>
+</div>
+
+<!-- ============ APPLICATION SHELL ============ -->
+<div id="app" class="app" hidden>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <button id="menu-toggle" class="menu-toggle" aria-expanded="false"
+              aria-controls="app-menu" aria-haspopup="true">
+        <span class="nav-toggle-bars" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span class="sr-only">Open menu</span>
+      </button>
+
+      <a class="brand" href="#/dashboard" aria-label="HirePath home">
+        <img src="assets/hirepath-logo.png" alt="HirePath" class="brand-logo" />
+      </a>
+
+      <nav id="primary-nav" class="nav" aria-label="Primary">
+        <a class="nav-link" href="#/dashboard" data-nav="dashboard">Dashboard</a>
+        <a class="nav-link" href="#/coach" data-nav="coach">Prep Coach</a>
+        <a class="nav-link" href="#/today" data-nav="today">Today&rsquo;s Plan <span id="nav-today-count" class="nav-pill" hidden></span></a>
+        <a class="nav-link" href="#/quickwiki" data-nav="quickwiki">Quickwiki</a>
+      </nav>
+
+      <a class="nav-cta" href="#/add" data-nav="add">+ Add Opportunity</a>
+
+      <!-- Menu beside the logo: account pages always, plus the primary links
+           on small screens where the navigation bar itself is hidden. -->
+      <div id="app-menu" class="app-menu" role="menu" aria-labelledby="menu-toggle" hidden>
+        <div class="menu-section menu-primary">
+          <p class="menu-heading">Go to</p>
+          <a class="menu-item" role="menuitem" href="#/dashboard" data-nav="dashboard">Dashboard</a>
+          <a class="menu-item" role="menuitem" href="#/coach" data-nav="coach">Prep Coach</a>
+          <a class="menu-item" role="menuitem" href="#/today" data-nav="today">Today&rsquo;s Plan</a>
+          <a class="menu-item" role="menuitem" href="#/quickwiki" data-nav="quickwiki">Quickwiki</a>
+          <a class="menu-item" role="menuitem" href="#/add" data-nav="add">+ Add Opportunity</a>
+        </div>
+        <div class="menu-section">
+          <p class="menu-heading">Jobs</p>
+          <a class="menu-item" role="menuitem" href="#/opportunities" data-nav="opportunities">
+            <span class="menu-item-title">My opportunities</span>
+            <span class="menu-item-sub">Every job you have saved</span>
+          </a>
+        </div>
+        <div class="menu-section">
+          <p class="menu-heading">Account</p>
+          <a class="menu-item" role="menuitem" href="#/profile" data-nav="profile">
+            <span class="menu-item-title">Your profile</span>
+            <span class="menu-item-sub">Name, skills, study time, reminders</span>
+          </a>
+          <a class="menu-item" role="menuitem" href="#/settings" data-nav="settings">
+            <span class="menu-item-title">Settings</span>
+            <span class="menu-item-sub">Gemini key, Demo mode, export and import</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div id="reminder-banner-slot" aria-live="polite"></div>
+
+  <main id="main" class="main" tabindex="-1">
+    <div id="view" class="view"></div>
+  </main>
+
+  <footer class="footer">
+    <p>HirePath &mdash; your data is stored in this browser using localStorage.</p>
+  </footer>
+</div>
+
+<!-- live regions + modal host -->
+<div id="toast-region" class="toast-region" role="status" aria-live="polite" aria-atomic="true"></div>
+<div id="modal-root" class="modal-root" hidden></div>
+
+<script src="gemini.js"></script>
+<script src="lookup.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
