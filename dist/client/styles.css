@@ -100,16 +100,18 @@ img { max-width: 100%; }
 [hidden] { display: none !important; }
 
 /* ============================ ONBOARDING ============================= */
+/* The opening screen fills the viewport: 100dvh follows the mobile browser
+   chrome as it shows and hides, so there is never a gap or an overflow. */
 .onboarding {
-  min-height: 100%;
-  display: flex; align-items: flex-start; justify-content: center;
+  min-height: 100dvh;
+  display: flex; align-items: center; justify-content: center;
   padding: 1.5rem 1.25rem;
   background: var(--canvas);
 }
 .onboarding-card {
-  width: 100%; max-width: 760px; background: var(--surface);
+  width: 100%; max-width: 860px; background: var(--surface);
   border: 1px solid var(--line); border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg); padding: 1.5rem;
+  box-shadow: var(--shadow-lg); padding: 1.75rem 2rem;
 }
 .onboarding-brand { margin-bottom: .8rem; }
 .onboarding-logo { height: 50px; width: auto; display: block; }
@@ -182,30 +184,41 @@ input[type="checkbox"] { width: 1.05rem; height: 1.05rem; accent-color: var(--te
   backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
 }
 .topbar-inner {
-  width: 100%; max-width: var(--maxw); margin: 0 auto; padding: .55rem 1.25rem;
-  display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto;
+  width: 100%; max-width: var(--maxw); margin: 0 auto; padding: .5rem 1.25rem;
+  /* brand | nav | add opportunity | profile */
+  min-height: 76px;
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: center; gap: .75rem; position: relative;
 }
-.brand { grid-column: 2; grid-row: 1; display: inline-flex; align-items: center; }
+.brand { grid-column: 1; grid-row: 1; display: inline-flex; align-items: center; }
 .brand-logo { height: 40px; width: auto; display: block; }
 
 .nav {
-  grid-column: 3; grid-row: 1; justify-self: center;
-  display: flex; align-items: center; justify-content: center; gap: .15rem; flex-wrap: wrap;
+  grid-column: 2; grid-row: 1; justify-self: center;
+  display: flex; align-items: center; justify-content: center; gap: .35rem; flex-wrap: wrap;
 }
 .nav-link {
+  position: relative;
   color: var(--ink-soft); text-decoration: none; font-weight: 600; font-size: .92rem;
-  padding: .45rem .75rem; min-height: 44px; border-radius: var(--radius); white-space: nowrap;
+  padding: .45rem .5rem; min-height: 44px; white-space: nowrap;
   display: inline-flex; align-items: center; gap: .4rem;
 }
-.nav-link:hover { background: var(--surface-2); color: var(--navy-800); }
-.nav-link.is-active { color: var(--navy-800); background: var(--teal-050); box-shadow: inset 0 0 0 1px rgba(3,128,236,.18); }
+/* A rule underneath rather than a filled box. It is always laid out, so the
+   label never shifts when it appears. */
+.nav-link::after {
+  content: ""; position: absolute; left: .5rem; right: .5rem; bottom: .3rem; height: 2px;
+  border-radius: 2px; background: var(--teal-600); opacity: 0; transition: opacity .15s;
+}
+.nav-link:hover { color: var(--navy-800); }
+.nav-link:hover::after { opacity: .45; }
+.nav-link.is-active { color: var(--navy-800); }
+.nav-link.is-active::after { opacity: 1; }
 .nav-pill {
   background: var(--teal-600); color: #fff; border-radius: 999px;
   font-size: .72rem; font-weight: 700; padding: .05rem .42rem; min-width: 1.2rem; text-align: center;
 }
 .nav-cta {
-  grid-column: 4; grid-row: 1; justify-self: end;
+  grid-column: 3; grid-row: 1; justify-self: end;
   background: linear-gradient(135deg, var(--navy-800), var(--navy-700)); color: #fff; text-decoration: none; font-weight: 600;
   font-size: .92rem; padding: .5rem .9rem; min-height: 44px; border-radius: var(--radius);
   white-space: nowrap; box-shadow: 0 7px 18px rgba(1,67,143,.2);
@@ -231,7 +244,7 @@ input[type="checkbox"] { width: 1.05rem; height: 1.05rem; accent-color: var(--te
 }
 .page-head .lede { color: var(--ink-soft); margin: 0; max-width: 62ch; }
 .eyebrow {
-  text-transform: uppercase; letter-spacing: .08em; font-size: .72rem;
+  letter-spacing: .01em; font-size: .78rem;
   font-weight: 700; color: var(--teal-700); margin: 0 0 .3rem;
 }
 
@@ -299,8 +312,8 @@ h1.with-icon, h2.with-icon, h3.with-icon {
 .hero-copy { min-width: 0; }
 .hero-kicker {
   display: flex; align-items: center; gap: .5rem; margin: 0 0 .45rem;
-  color: rgba(255,255,255,.78); font-size: .75rem; font-weight: 700;
-  letter-spacing: .09em; text-transform: uppercase;
+  color: rgba(255,255,255,.82); font-size: .8rem; font-weight: 700;
+  letter-spacing: .01em;
 }
 .hero-kicker-dot {
   width: 7px; height: 7px; border-radius: 50%; background: #9bd1ff;
@@ -679,6 +692,8 @@ h1.with-icon, h2.with-icon, h3.with-icon {
 }
 .notice.warn { border-left-color: var(--warn-700); background: var(--warn-100); color: var(--warn-700); }
 .notice.danger { border-left-color: var(--danger-700); background: var(--danger-100); color: var(--danger-700); }
+/* A notice with no accent stripe, for cards that already have their own. */
+.notice.notice-flat { border-left: 1px solid var(--line); }
 .notice p { margin: 0; }
 .notice p + p { margin-top: .4rem; }
 
@@ -931,6 +946,8 @@ h1.with-icon, h2.with-icon, h3.with-icon {
 .coach-page-head h1 {
   margin-bottom: .3rem; font-size: clamp(2rem, 3.5vw, 2.8rem);
   letter-spacing: -.035em;
+  /* the "Hire" blue sampled from the logo */
+  color: var(--navy-800);
 }
 .coach-page-head .lede { font-size: 1.05rem; }
 
@@ -1085,7 +1102,7 @@ h1.with-icon, h2.with-icon, h3.with-icon {
 
 /* ===================== MENU BESIDE THE LOGO ========================== */
 .menu-toggle {
-  grid-column: 1; grid-row: 1;
+  grid-column: 4; grid-row: 1; justify-self: end;
   flex: 0 0 auto; background: var(--surface); border: 1px solid var(--line);
   border-radius: var(--radius); width: 44px; height: 44px; cursor: pointer;
   display: inline-flex; align-items: center; justify-content: center;
@@ -1109,7 +1126,7 @@ h1.with-icon, h2.with-icon, h3.with-icon {
 }
 
 .app-menu {
-  position: absolute; top: calc(100% + .45rem); left: 1.25rem; z-index: 80;
+  position: absolute; top: calc(100% + .45rem); right: 1.25rem; left: auto; z-index: 80;
   min-width: 268px; max-width: calc(100vw - 2.5rem);
   background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
   box-shadow: var(--shadow-lg); padding: .5rem;
@@ -1203,7 +1220,7 @@ h1.with-icon, h2.with-icon, h3.with-icon {
   display: flex; flex-direction: column;
 }
 .dashboard-clean-head { max-width: 840px; }
-.dashboard-date { margin-bottom: .55rem; letter-spacing: .16em; }
+.dashboard-date { margin-bottom: .55rem; letter-spacing: .01em; }
 .dashboard-clean-head h1 {
   color: var(--navy-900); margin: 0 0 .25rem;
   font-size: clamp(2.35rem, 4vw, 3.15rem); letter-spacing: -.035em;
@@ -1287,10 +1304,10 @@ h1.with-icon, h2.with-icon, h3.with-icon {
 }
 .quickwiki-input-wrap { min-width: 0; display: flex; }
 .quickwiki-search-row input.quickwiki-search-input {
-  flex: 1 1 auto; width: 100%; height: 64px; min-height: 64px;
-  padding: .85rem 1rem; border-radius: 12px; background: #fff; font-size: 1rem;
+  flex: 1 1 auto; width: 100%; height: 48px; min-height: 48px;
+  padding: .6rem .9rem; border-radius: 12px; background: #fff; font-size: 1rem;
 }
-.quickwiki-search-row .btn { height: 64px; min-height: 64px; font-size: 1.05rem; }
+.quickwiki-search-row .btn { height: 48px; min-height: 48px; font-size: 1rem; }
 .quickwiki-popular {
   display: flex; flex-wrap: wrap; align-items: center; gap: .55rem;
   margin-top: 1rem; color: var(--ink-soft); font-size: .9rem;
@@ -1349,7 +1366,7 @@ h1.with-icon, h2.with-icon, h3.with-icon {
   .dashboard-quick-grid { grid-template-columns: minmax(0, 1fr); }
   .quickwiki-search-card { padding: 1.2rem; }
   .quickwiki-search-row { grid-template-columns: minmax(0, 1fr); }
-  .quickwiki-search-row .btn { min-height: 52px; }
+  .quickwiki-search-row .btn { height: 48px; min-height: 48px; }
   .dashboard-clean-section, .quickwiki-category-section { margin-top: 1.7rem; }
 }
 
@@ -1371,3 +1388,44 @@ h1.with-icon, h2.with-icon, h3.with-icon {
   background: var(--teal-600); border-color: var(--teal-600); color: #fff;
 }
 .opp-filter .coach-example.is-on:hover { background: var(--teal-700); border-color: var(--teal-700); }
+
+/* ============ DROPDOWN THAT ALWAYS OPENS DOWNWARD =================== */
+.dropdown { position: relative; min-width: 0; }
+.dropdown-button {
+  width: 100%; min-height: 44px; padding: .6rem .7rem;
+  display: flex; align-items: center; justify-content: space-between; gap: .5rem;
+  font: inherit; text-align: left; cursor: pointer;
+  color: var(--ink); background: var(--surface);
+  border: 1px solid var(--line); border-radius: var(--radius);
+}
+.dropdown-button:hover { border-color: var(--navy-400); }
+.dropdown-button[aria-expanded="true"] { border-color: var(--teal-600); }
+.dropdown-value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dropdown-caret { flex: 0 0 auto; color: var(--ink-muted); font-size: .8rem; }
+
+.dropdown-list {
+  display: none; position: absolute; z-index: 70;
+  /* anchored to the bottom edge of the button, so it can only open downward */
+  top: calc(100% + .25rem); left: 0; right: 0;
+  margin: 0; padding: .25rem; list-style: none;
+  max-height: 240px; overflow-y: auto;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); box-shadow: var(--shadow-lg);
+}
+.dropdown-list.is-open { display: block; }
+.dropdown-option {
+  padding: .5rem .6rem; border-radius: 7px; cursor: pointer;
+  font-size: .92rem; color: var(--ink);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.dropdown-option:hover, .dropdown-option:focus { background: var(--surface-2); outline: none; }
+.dropdown-option:focus-visible { outline: 2px solid var(--teal-500); outline-offset: -2px; }
+.dropdown-option.is-selected { background: var(--teal-050); color: var(--teal-700); font-weight: 600; }
+
+/* ===================== SIGN OUT (profile page) ====================== */
+.signout-card { border-top: 3px solid var(--line); }
+.signout-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; flex-wrap: wrap;
+}
+.signout-row p { margin: 0; color: var(--ink-soft); font-size: .9rem; max-width: 52ch; }

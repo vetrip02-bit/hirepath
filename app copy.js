@@ -927,97 +927,6 @@
     return h('span', null, labelText, ' ', h('span', { class: 'optional' }, '(optional)'));
   }
 
-  /**
-   * A dropdown that always opens BELOW its button.
-   *
-   * A native <select> cannot do this: on macOS the system popup aligns the
-   * chosen row over the control, so it appears above whenever anything other
-   * than the first option is selected, and no CSS can change that.
-   *
-   * Returns the wrapper element with a `value` property, so it drops straight
-   * into the same code that used selectInput().
-   */
-  function dropdownInput(id, options, current) {
-    var value = current || (options[0] && options[0].value) || '';
-    var open = false;
-
-    function labelFor(v) {
-      for (var i = 0; i < options.length; i++) {
-        if (options[i].value === v) { return options[i].label; }
-      }
-      return (options[0] && options[0].label) || '';
-    }
-
-    var text = h('span', { class: 'dropdown-value' }, labelFor(value));
-    var button = h('button', {
-      type: 'button', id: id, class: 'dropdown-button',
-      'aria-haspopup': 'listbox', 'aria-expanded': 'false'
-    }, text, h('span', { class: 'dropdown-caret', 'aria-hidden': 'true' }, '▾'));
-
-    var list = h('ul', { class: 'dropdown-list', role: 'listbox', tabindex: '-1' });
-    var wrap = h('div', { class: 'dropdown' }, button, list);
-
-    function close() {
-      open = false;
-      list.classList.remove('is-open');
-      button.setAttribute('aria-expanded', 'false');
-    }
-    function choose(v) {
-      value = v;
-      text.textContent = labelFor(v);
-      paint();
-      close();
-      button.focus();
-    }
-    function paint() {
-      clear(list);
-      options.forEach(function (opt) {
-        var selected = opt.value === value;
-        var li = h('li', {
-          class: 'dropdown-option' + (selected ? ' is-selected' : ''),
-          role: 'option', 'aria-selected': selected ? 'true' : 'false', tabindex: '-1',
-          onclick: function () { choose(opt.value); },
-          onkeydown: function (e) {
-            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(opt.value); }
-          }
-        }, opt.label);
-        list.appendChild(li);
-      });
-    }
-    paint();
-
-    button.addEventListener('click', function (e) {
-      e.stopPropagation();
-      open = !open;
-      list.classList.toggle('is-open', open);
-      button.setAttribute('aria-expanded', open ? 'true' : 'false');
-      if (open) {
-        var first = list.querySelector('.dropdown-option.is-selected') ||
-                    list.querySelector('.dropdown-option');
-        if (first) { first.focus(); }
-      }
-    });
-    button.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowDown' && !open) { e.preventDefault(); button.click(); }
-    });
-    list.addEventListener('keydown', function (e) {
-      var items = [].slice.call(list.querySelectorAll('.dropdown-option'));
-      var i = items.indexOf(document.activeElement);
-      if (e.key === 'ArrowDown') { e.preventDefault(); (items[i + 1] || items[0]).focus(); }
-      if (e.key === 'ArrowUp') { e.preventDefault(); (items[i - 1] || items[items.length - 1]).focus(); }
-      if (e.key === 'Escape') { e.preventDefault(); close(); button.focus(); }
-    });
-    document.addEventListener('click', function (e) {
-      if (open && !wrap.contains(e.target)) { close(); }
-    });
-
-    Object.defineProperty(wrap, 'value', {
-      get: function () { return value; },
-      set: function (v) { choose(v); }
-    });
-    return wrap;
-  }
-
   function selectInput(id, options, current) {
     var node = h('select', { id: id, name: id });
     options.forEach(function (opt) {
@@ -2953,7 +2862,7 @@
 
     frag.appendChild(h('div', { class: 'page-head coach-page-head' },
       h('div', null,
-        h('p', { class: 'eyebrow' }, 'Prep coach'),
+        h('p', { class: 'eyebrow' }, 'Prep Coach'),
         h('h1', null, 'Build a focused interview prep plan'),
         h('p', { class: 'lede' },
           'Choose a saved opportunity or start with any topic.'))
@@ -3183,7 +3092,7 @@
       h('div', null,
         h('a', { class: 'small', href: opp ? '#/opportunity/' + opp.id : '#/coach' },
           opp ? '← Back to the opportunity' : '← Back to the Coach'),
-        h('p', { class: 'eyebrow mt-0' }, 'Prep coach'),
+        h('p', { class: 'eyebrow mt-0' }, 'Prep Coach'),
         h('h1', { class: 'mt-0' }, ctx.label),
         opp && opp.deadline
           ? h('p', { class: 'lede' },
@@ -4451,7 +4360,7 @@
 
     frag.appendChild(h('div', { class: 'page-head' },
       h('div', null,
-        h('p', { class: 'eyebrow' }, 'Today’s plan'),
+        h('p', { class: 'eyebrow' }, 'Today’s Plan'),
         h('h1', null, formatDateLong(today)),
         h('p', { class: 'lede' },
           entries.length
@@ -4481,7 +4390,7 @@
     var ownMinutes = textInput('own-task-min', '30', {
       type: 'number', min: '5', max: '480', 'aria-label': 'Minutes'
     });
-    var ownJob = dropdownInput('own-task-job',
+    var ownJob = selectInput('own-task-job',
       [{ value: '', label: 'Not linked to a job' }].concat(
         state.opportunities.map(function (o) {
           return { value: o.id, label: o.role + (o.company ? ' — ' + o.company : '') };
@@ -4809,7 +4718,7 @@
       h('div', { class: 'form-actions' },
         state.settings.notificationsEnabled && permission === 'granted' ? offBtn : enableBtn),
       status,
-      h('div', { class: 'notice notice-flat' },
+      h('div', { class: 'notice' },
         h('p', null, 'Notifications only work while HirePath is open in a tab. Reminders with the ' +
                      'browser closed would need a server.'))
     );
@@ -4952,47 +4861,7 @@
     frag.appendChild(h('div', { class: 'grid grid-2' },
       h('div', null, profileCard()),
       h('div', null, notificationsCard())));
-    frag.appendChild(signOutCard());
     return frag;
-  }
-
-  /**
-   * Sign out returns to the opening screen. HirePath has no accounts — the
-   * profile is simply the gate — so this clears the profile and nothing else.
-   * Saved jobs, plans and schedules stay put; "Clear application data" in
-   * Settings is the one that erases everything.
-   */
-  function signOutCard() {
-    return h('section', { class: 'card signout-card section' },
-      h('div', { class: 'signout-row' },
-        h('div', null,
-          h('h2', { class: 'mb-0' }, 'Sign out'),
-          h('p', null,
-            'Returns to the opening screen. Your saved jobs, plans and schedules stay in this ' +
-            'browser — only your profile details are cleared.')),
-        h('button', {
-          type: 'button', class: 'btn btn-danger',
-          onclick: function () {
-            confirmDialog({
-              title: 'Sign out of HirePath?',
-              message: 'You will go back to the opening screen. Your saved jobs, plans and ' +
-                       'schedules are kept, so signing back in restores them.',
-              confirmText: 'Sign out', danger: true
-            }).then(function (ok) {
-              if (!ok) { return; }
-              state.onboarded = false;
-              state.profile = defaultState().profile;
-              saveState();
-              /* Back to the very start. */
-              location.hash = '#/dashboard';
-              route = parseHash();
-              closeMenu();
-              window.scrollTo(0, 0);
-              render();
-              toast('Signed out.');
-            });
-          }
-        }, 'Sign out')));
   }
 
   function viewSettings() {
