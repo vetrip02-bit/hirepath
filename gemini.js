@@ -27,7 +27,17 @@
   GeminiError.prototype.constructor = GeminiError;
 
   /* Map an HTTP status to safe, user-facing copy. The key is never included. */
-  function messageForStatus(status) {
+  function messageForStatus(status, viaProxy) {
+    /* The built-in proxy only exists on the hosted site. Served from a plain
+       static server (or opened as a file) there is nothing at /api/gemini, so
+       these two statuses mean "no shared key here", not a Gemini fault. */
+    if (viaProxy && (status === 404 || status === 501 || status === 405)) {
+      return {
+        kind: 'no-proxy',
+        message: 'This copy of HirePath has no shared Gemini key. Add your own key in ' +
+                 'Settings, or switch Demo mode on. (The hosted version supplies a key for you.)'
+      };
+    }
     if (status === 400) {
       return {
         kind: 'bad-request',
@@ -274,7 +284,7 @@
       }).then(function (res) {
       if (timer) { clearTimeout(timer); }
       if (!res.ok) {
-        var info = messageForStatus(res.status);
+        var info = messageForStatus(res.status, !apiKey);
         /* Honour Retry-After when the server sends it. */
         var retryAfter = 0;
         try {
@@ -660,6 +670,46 @@
         temperature: 0.3,
         maxOutputTokens: 5120
       }).then(parseModelJson);
+    },
+
+    /**
+     * Ask the key which models it can actually use.
+     * A 404 on generateContent means the model name is not available to THIS
+     * key, and the names differ between keys, projects and API versions — so
+     * guessing is hopeless. This turns it into a list.
+     */
+    listModels: function (settings) {
+      var apiKey = ((settings && settings.apiKey) || '').trim();
+      if (!apiKey) {
+        return Promise.reject(new GeminiError(
+          'Add your Gemini key first — the list of models depends on the key.', 'no-key'));
+      }
+      return fetch(ENDPOINT_BASE.replace(/models\/$/, 'models'), {
+        method: 'GET',
+        headers: { 'x-goog-api-key': apiKey }
+      }).then(function (res) {
+        if (!res.ok) {
+          var info = messageForStatus(res.status, false);
+          throw new GeminiError(info.message, info.kind);
+        }
+        return res.json();
+      }, function () {
+        throw new GeminiError(
+          'Could not reach Gemini to list the models. Check your connection.', 'network');
+      }).then(function (data) {
+        var models = (data && data.models) || [];
+        var usable = models.filter(function (m) {
+          var methods = (m && m.supportedGenerationMethods) || [];
+          return methods.indexOf('generateContent') !== -1;
+        }).map(function (m) {
+          return String(m.name || '').replace(/^models\//, '');
+        }).filter(Boolean);
+        if (!usable.length) {
+          throw new GeminiError(
+            'That key returned no models that can generate content.', 'empty');
+        }
+        return usable;
+      });
     },
 
     /** Tiny call used by Settings to verify a saved key. */

@@ -2211,7 +2211,9 @@
 
     if (addState.tab === 'text') {
       var textStatus = statusLine('analyse-text-status');
-      var area = textArea('ad-text', addState.adText, 12,
+      /* Avoid ad-like DOM ids: browser content blockers can hide elements
+         whose ids start with "ad-", even when the page is not advertising. */
+      var area = textArea('job-description-text', addState.adText, 12,
         'Paste the complete job advertisement here, including requirements, responsibilities and any closing date.');
       area.addEventListener('input', function () { addState.adText = area.value; });
 
@@ -2228,7 +2230,7 @@
 
       append(panel, [
         h('div', { class: 'field' },
-          h('label', { for: 'ad-text' }, 'Advertisement text'),
+          h('label', { for: 'job-description-text' }, 'Advertisement text'),
           area,
           h('p', { class: 'field-help' }, 'Saved with the opportunity.')),
         h('div', { class: 'form-actions' },
@@ -2255,7 +2257,7 @@
     if (addState.tab === 'image') {
       var imgStatus = statusLine('analyse-image-status');
       var fileInput = h('input', {
-        type: 'file', id: 'ad-image', name: 'ad-image',
+        type: 'file', id: 'job-description-image', name: 'job-description-image',
         accept: 'image/png,image/jpeg,image/webp'
       });
       fileInput.addEventListener('change', function () {
@@ -2264,7 +2266,7 @@
 
       var body = [
         h('div', { class: 'field' },
-          h('label', { for: 'ad-image' }, 'Advertisement image'),
+          h('label', { for: 'job-description-image' }, 'Advertisement image'),
           fileInput,
           h('p', { class: 'field-help' },
             'PNG, JPG, JPEG or WEBP, up to 4 MB. The picture itself is not saved.'))
@@ -4681,6 +4683,42 @@
         : 'Demo mode is off. HirePath will call Gemini with your saved key.', 'ok');
     });
 
+    /* Model names differ between keys and projects, so a 404 is not something
+       the user can guess their way out of. This asks the key what it has. */
+    var modelsBox = h('div', { class: 'model-list' });
+    var modelsBtn = h('button', { type: 'button', class: 'btn btn-secondary' },
+      'Show models for my key');
+    modelsBtn.addEventListener('click', function () {
+      setBusy(modelsBtn, true, 'Checking…');
+      setStatus(status, 'Asking Gemini which models your key can use…', 'busy');
+      Gemini.listModels(state.settings).then(function (names) {
+        setBusy(modelsBtn, false);
+        setStatus(status, names.length + ' model' + (names.length === 1 ? '' : 's') +
+          ' available. Pick one to use it.', 'ok');
+        clear(modelsBox);
+        modelsBox.appendChild(h('p', { class: 'field-help' },
+          'Models your key can generate with:'));
+        modelsBox.appendChild(h('div', { class: 'coach-examples' },
+          names.map(function (name) {
+            return h('button', {
+              type: 'button',
+              class: 'coach-example' + (name === state.settings.model ? ' is-on' : ''),
+              onclick: function () {
+                modelInput.value = name;
+                state.settings.model = name;
+                saveState();
+                render();
+                toast('Model set to ' + name + '.', 'ok');
+              }
+            }, name);
+          })));
+      }, function (err) {
+        setBusy(modelsBtn, false);
+        clear(modelsBox);
+        setStatus(status, geminiErrorMessage(err), 'error');
+      });
+    });
+
     var testBtn = h('button', { type: 'button', class: 'btn btn-secondary' }, 'Test connection');
     testBtn.addEventListener('click', function () {
       setBusy(testBtn, true, 'Testing…');
@@ -4731,7 +4769,8 @@
           'Default: ' + Gemini.DEFAULT_MODEL + '. Change this if your key uses a different model.', true),
         h('div', { class: 'form-actions field-wide' },
           h('button', { type: 'submit', class: 'btn btn-primary' }, 'Save Gemini settings'),
-          testBtn)
+          testBtn, modelsBtn),
+        h('div', { class: 'field-wide' }, modelsBox)
       ),
       status,
       h('p', { class: 'small muted mb-0' },

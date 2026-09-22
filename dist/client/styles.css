@@ -139,7 +139,7 @@ input[type="time"], input[type="password"], select, textarea {
   padding: .55rem .7rem; width: 100%; min-width: 0; min-height: 44px;
 }
 textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
-#ad-text { height: clamp(8rem, 20vh, 10rem); min-height: 8rem; }
+#job-description-text { height: clamp(8rem, 20vh, 10rem); min-height: 8rem; }
 input[type="file"] { min-height: 44px; padding: .45rem; }
 input:hover, select:hover, textarea:hover { border-color: var(--navy-400); }
 input:focus, select:focus, textarea:focus { border-color: var(--teal-600); }
@@ -1429,3 +1429,10 @@ h1.with-icon, h2.with-icon, h3.with-icon {
   gap: 1rem; flex-wrap: wrap;
 }
 .signout-row p { margin: 0; color: var(--ink-soft); font-size: .9rem; max-width: 52ch; }
+
+/* model picker in Settings */
+.model-list:empty { display: none; }
+.model-list { margin-top: .5rem; }
+.model-list .coach-example.is-on {
+  background: var(--teal-600); border-color: var(--teal-600); color: #fff;
+}

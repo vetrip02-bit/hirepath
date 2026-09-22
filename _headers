@@ -1,0 +1,13 @@
+# Always revalidate the application shell. Its versioned asset URLs ensure that
+# a new deployment cannot accidentally keep running an older JavaScript bundle.
+/
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/index.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/*.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+/*.css
+  Cache-Control: public, max-age=0, must-revalidate
