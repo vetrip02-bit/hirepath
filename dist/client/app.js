@@ -2103,6 +2103,47 @@
     reader.readAsDataURL(file);
   }
 
+  /**
+   * One-click paste. The textarea already accepts a normal paste, but reading
+   * the clipboard directly removes any doubt on touch devices and where the
+   * keyboard shortcut is awkward. Clipboard reads need a secure context and
+   * the user's permission, so every failure falls back to a clear instruction
+   * rather than silently doing nothing.
+   */
+  function pasteButton(area, statusNode) {
+    var btn = h('button', { type: 'button', class: 'btn btn-sm btn-secondary' },
+      'Paste from clipboard');
+    btn.addEventListener('click', function () {
+      if (!navigator.clipboard || !navigator.clipboard.readText) {
+        setStatus(statusNode,
+          'This browser will not let a page read the clipboard. Click in the box and press ' +
+          'Ctrl+V (⌘V on a Mac).', 'error');
+        area.focus();
+        return;
+      }
+      setBusy(btn, true, 'Pasting…');
+      navigator.clipboard.readText().then(function (text) {
+        setBusy(btn, false);
+        if (!text || !text.trim()) {
+          setStatus(statusNode, 'Your clipboard is empty. Copy the advertisement first.', 'error');
+          return;
+        }
+        area.value = text;
+        addState.adText = text;
+        area.focus();
+        setStatus(statusNode,
+          'Pasted ' + text.trim().length + ' characters. Now choose “Analyse with Gemini”.', 'ok');
+      }, function () {
+        setBusy(btn, false);
+        setStatus(statusNode,
+          'Your browser blocked clipboard access. Click in the box and press Ctrl+V (⌘V on a Mac).',
+          'error');
+        area.focus();
+      });
+    });
+    return btn;
+  }
+
   function viewAdd() {
     var frag = document.createDocumentFragment();
 
@@ -2230,9 +2271,12 @@
 
       append(panel, [
         h('div', { class: 'field' },
-          h('label', { for: 'job-description-text' }, 'Advertisement text'),
+          h('div', { class: 'paste-head' },
+            h('label', { for: 'job-description-text' }, 'Advertisement text'),
+            pasteButton(area, textStatus)),
           area,
-          h('p', { class: 'field-help' }, 'Saved with the opportunity.')),
+          h('p', { class: 'field-help' },
+            'Saved with the opportunity. You can also paste with Ctrl+V (⌘V on a Mac).')),
         h('div', { class: 'form-actions' },
           analyseBtn,
           h('button', {
