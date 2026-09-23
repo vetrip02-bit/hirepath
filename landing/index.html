@@ -12,7 +12,7 @@
 <meta property="og:image" content="assets/og.png" />
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="icon" href="assets/hirepath-logo.png" />
-<link rel="stylesheet" href="landing.css?v=2" />
+<link rel="stylesheet" href="landing.css?v=3" />
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
@@ -24,23 +24,20 @@
       <img src="assets/hirepath-logo.png" alt="HirePath" />
     </a>
 
-    <button id="menu-toggle" class="menu-toggle" aria-expanded="false" aria-controls="site-nav">
-      <span class="bars" aria-hidden="true"><span></span><span></span><span></span></span>
-      <span class="sr-only">Open menu</span>
-    </button>
-
     <nav id="site-nav" class="site-nav" aria-label="Primary">
       <a href="#features">Features</a>
       <a href="#how">How it works</a>
       <a href="blog.html">Blog</a>
       <a href="assets/HirePath-User-Guide.pdf" target="_blank" rel="noopener">Documentation</a>
-      <a href="https://www.instagram.com/hirepath_in" target="_blank" rel="noopener me">Instagram</a>
-
-      <span class="nav-actions">
-        <a class="btn btn-ghost" href="https://heartfelt-hotteok-cab423.netlify.app/#/dashboard">Sign in</a>
-        <a class="btn btn-primary" href="https://heartfelt-hotteok-cab423.netlify.app/#/dashboard">Get started</a>
-      </span>
     </nav>
+
+    <div class="nav-actions">
+      <a class="btn btn-primary" href="https://heartfelt-hotteok-cab423.netlify.app/#/dashboard">Get started</a>
+      <button id="menu-toggle" class="menu-toggle" aria-expanded="false" aria-controls="site-nav">
+        <span class="bars" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span class="sr-only">Open menu</span>
+      </button>
+    </div>
   </div>
 </header>
 
@@ -48,6 +45,9 @@
 
   <!-- ============================= HERO ============================= -->
   <section class="hero">
+    <span class="orb orb-1" aria-hidden="true"></span>
+    <span class="orb orb-2" aria-hidden="true"></span>
+
     <div class="shell hero-grid">
       <div class="hero-copy">
         <p class="pill"><span class="pill-dot" aria-hidden="true"></span> Free · Works in your browser</p>
@@ -61,9 +61,6 @@
         <div class="hero-actions">
           <a class="btn btn-primary btn-lg" href="https://heartfelt-hotteok-cab423.netlify.app/#/dashboard">
             Get started — it's free
-          </a>
-          <a class="btn btn-outline btn-lg" href="https://heartfelt-hotteok-cab423.netlify.app/#/dashboard">
-            Sign in
           </a>
         </div>
 
@@ -109,51 +106,53 @@
   <!-- =========================== FEATURES =========================== -->
   <section id="features" class="section">
     <div class="shell">
-      <p class="eyebrow">What you get</p>
-      <h2 class="section-title">Everything a serious job search needs</h2>
-      <p class="section-lede">
-        Vacancy details sit in browser tabs, deadlines disappear into calendars and
-        preparation notes scatter across files. HirePath keeps it in one place.
-      </p>
+      <div class="section-head reveal">
+        <p class="eyebrow">What you get</p>
+        <h2 class="section-title">Everything a serious job search needs</h2>
+        <p class="section-lede">
+          Vacancy details sit in browser tabs, deadlines disappear into calendars and
+          preparation notes scatter across files. HirePath keeps it in one place.
+        </p>
+      </div>
 
       <div class="cards">
-        <article class="card">
-          <span class="card-icon" aria-hidden="true">📋</span>
+        <article class="card reveal" style="--i:0">
+          <span class="card-icon i-blue" aria-hidden="true">📋</span>
           <h3>Save every opportunity</h3>
           <p>Paste the advertisement, upload a photo of it, or type the details. Role, company,
              salary, skills, documents and the closing date, all captured.</p>
         </article>
 
-        <article class="card">
-          <span class="card-icon" aria-hidden="true">⏳</span>
+        <article class="card reveal" style="--i:1">
+          <span class="card-icon i-amber" aria-hidden="true">⏳</span>
           <h3>Never miss a deadline</h3>
           <p>Every date is recalculated from today. "Closes tomorrow", "2 days remaining",
              "Follow-up due" — visible the moment you open the dashboard.</p>
         </article>
 
-        <article class="card">
-          <span class="card-icon" aria-hidden="true">🎯</span>
+        <article class="card reveal" style="--i:2">
+          <span class="card-icon i-violet" aria-hidden="true">🎯</span>
           <h3>A plan built from the job</h3>
           <p>The Prep Coach turns the skills a role actually lists into an ordered learning
              path, with lessons, worked examples and quizzes.</p>
         </article>
 
-        <article class="card">
-          <span class="card-icon" aria-hidden="true">🗓️</span>
+        <article class="card reveal" style="--i:3">
+          <span class="card-icon i-green" aria-hidden="true">🗓️</span>
           <h3>Know what to do today</h3>
           <p>Your topics are spread across the days you have left — never past the closing
              date — so each morning has a clear next step.</p>
         </article>
 
-        <article class="card">
-          <span class="card-icon" aria-hidden="true">🔎</span>
+        <article class="card reveal" style="--i:4">
+          <span class="card-icon i-cyan" aria-hidden="true">🔎</span>
           <h3>Understand the jargon</h3>
           <p>Quickwiki searches Wikipedia and a built-in dictionary, so an unfamiliar company,
              tool or term never stops you mid-application.</p>
         </article>
 
-        <article class="card">
-          <span class="card-icon" aria-hidden="true">🔒</span>
+        <article class="card reveal" style="--i:5">
+          <span class="card-icon i-rose" aria-hidden="true">🔒</span>
           <h3>Private by default</h3>
           <p>Everything is stored in your own browser. No account, no sign-up, and you can
              export or clear your data whenever you like.</p>
@@ -165,21 +164,23 @@
   <!-- ========================== HOW IT WORKS ========================= -->
   <section id="how" class="section section-tint">
     <div class="shell">
-      <p class="eyebrow">How it works</p>
-      <h2 class="section-title">Three steps, about two minutes</h2>
+      <div class="section-head reveal">
+        <p class="eyebrow">How it works</p>
+        <h2 class="section-title">Three steps, about two minutes</h2>
+      </div>
 
       <ol class="steps">
-        <li>
+        <li class="reveal" style="--i:0">
           <span class="step-num">1</span>
           <h3>Save a job advertisement</h3>
           <p>Paste the text, upload a photograph of it, or enter the details yourself.</p>
         </li>
-        <li>
+        <li class="reveal" style="--i:1">
           <span class="step-num">2</span>
           <h3>Build your preparation plan</h3>
           <p>Turn the role's requirements into an ordered learning path with lessons and quizzes.</p>
         </li>
-        <li>
+        <li class="reveal" style="--i:2">
           <span class="step-num">3</span>
           <h3>Work through it daily</h3>
           <p>Topics are spread across the time you have left, and Today's Plan shows the next step.</p>
@@ -212,9 +213,6 @@
     <div class="footer-brand">
       <img src="assets/hirepath-logo.png" alt="HirePath" />
       <p>Save opportunities, track deadlines and prepare properly — all in one place.</p>
-      <a class="insta" href="https://www.instagram.com/hirepath_in" target="_blank" rel="noopener me">
-        <span aria-hidden="true">📷</span> @hirepath_in
-      </a>
     </div>
 
     <nav class="footer-col" aria-label="Product">
@@ -227,9 +225,26 @@
     <nav class="footer-col" aria-label="Resources">
       <h3>Resources</h3>
       <a href="blog.html">Blog</a>
-      <a href="assets/HirePath-User-Guide.pdf" target="_blank" rel="noopener">Documentation (PDF)</a>
-      <a href="https://www.instagram.com/hirepath_in" target="_blank" rel="noopener me">Instagram</a>
+      <a href="assets/HirePath-User-Guide.pdf" target="_blank" rel="noopener">Documentation</a>
     </nav>
+
+    <div class="footer-col" aria-label="Contact">
+      <h3>Contact</h3>
+      <a class="with-icon" href="https://www.instagram.com/hirepath_in" target="_blank" rel="noopener me">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <rect x="3" y="3" width="18" height="18" rx="5" />
+          <circle cx="12" cy="12" r="4" />
+          <circle cx="17.2" cy="6.8" r="1.2" fill="currentColor" stroke="none" />
+        </svg>
+        Instagram
+      </a>
+      <a class="with-icon" href="https://www.instagram.com/direct/t/hirepath_in" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M21 4 3 11l6 2.5L11 20l3-5.5L21 4Z" />
+        </svg>
+        Send a message
+      </a>
+    </div>
   </div>
 
   <div class="shell footer-base">
@@ -261,6 +276,25 @@
         toggle.setAttribute('aria-expanded', 'false');
       }
     });
+  }());
+
+  /* Reveal sections as they scroll into view. */
+  (function () {
+    var items = document.querySelectorAll('.reveal');
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced || !('IntersectionObserver' in window)) {
+      for (var i = 0; i < items.length; i++) items[i].classList.add('is-in');
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: .1 });
+    for (var j = 0; j < items.length; j++) io.observe(items[j]);
   }());
 </script>
 </body>

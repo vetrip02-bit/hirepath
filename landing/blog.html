@@ -12,8 +12,8 @@
 <meta property="og:image" content="assets/og.png" />
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="icon" href="assets/hirepath-logo.png" />
-<link rel="stylesheet" href="landing.css?v=2" />
-<link rel="stylesheet" href="blog.css?v=1" />
+<link rel="stylesheet" href="landing.css?v=3" />
+<link rel="stylesheet" href="blog.css?v=2" />
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
@@ -24,23 +24,20 @@
       <img src="assets/hirepath-logo.png" alt="HirePath" />
     </a>
 
-    <button id="menu-toggle" class="menu-toggle" aria-expanded="false" aria-controls="site-nav">
-      <span class="bars" aria-hidden="true"><span></span><span></span><span></span></span>
-      <span class="sr-only">Open menu</span>
-    </button>
-
     <nav id="site-nav" class="site-nav" aria-label="Primary">
       <a href="index.html#features">Features</a>
       <a href="index.html#how">How it works</a>
       <a href="blog.html" aria-current="page">Blog</a>
       <a href="assets/HirePath-User-Guide.pdf" target="_blank" rel="noopener">Documentation</a>
-      <a href="https://www.instagram.com/hirepath_in" target="_blank" rel="noopener me">Instagram</a>
-
-      <span class="nav-actions">
-        <a class="btn btn-ghost" href="https://heartfelt-hotteok-cab423.netlify.app/#/dashboard">Sign in</a>
-        <a class="btn btn-primary" href="https://heartfelt-hotteok-cab423.netlify.app/#/dashboard">Get started</a>
-      </span>
     </nav>
+
+    <div class="nav-actions">
+      <a class="btn btn-primary" href="https://heartfelt-hotteok-cab423.netlify.app/#/dashboard">Get started</a>
+      <button id="menu-toggle" class="menu-toggle" aria-expanded="false" aria-controls="site-nav">
+        <span class="bars" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span class="sr-only">Open menu</span>
+      </button>
+    </div>
   </div>
 </header>
 
@@ -171,9 +168,6 @@
     <div class="footer-brand">
       <img src="assets/hirepath-logo.png" alt="HirePath" />
       <p>Save opportunities, track deadlines and prepare properly — all in one place.</p>
-      <a class="insta" href="https://www.instagram.com/hirepath_in" target="_blank" rel="noopener me">
-        <span aria-hidden="true">📷</span> @hirepath_in
-      </a>
     </div>
 
     <nav class="footer-col" aria-label="Product">
@@ -186,9 +180,26 @@
     <nav class="footer-col" aria-label="Resources">
       <h3>Resources</h3>
       <a href="blog.html">Blog</a>
-      <a href="assets/HirePath-User-Guide.pdf" target="_blank" rel="noopener">Documentation (PDF)</a>
-      <a href="https://www.instagram.com/hirepath_in" target="_blank" rel="noopener me">Instagram</a>
+      <a href="assets/HirePath-User-Guide.pdf" target="_blank" rel="noopener">Documentation</a>
     </nav>
+
+    <div class="footer-col" aria-label="Contact">
+      <h3>Contact</h3>
+      <a class="with-icon" href="https://www.instagram.com/hirepath_in" target="_blank" rel="noopener me">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <rect x="3" y="3" width="18" height="18" rx="5" />
+          <circle cx="12" cy="12" r="4" />
+          <circle cx="17.2" cy="6.8" r="1.2" fill="currentColor" stroke="none" />
+        </svg>
+        Instagram
+      </a>
+      <a class="with-icon" href="https://www.instagram.com/direct/t/hirepath_in" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M21 4 3 11l6 2.5L11 20l3-5.5L21 4Z" />
+        </svg>
+        Send a message
+      </a>
+    </div>
   </div>
 
   <div class="shell footer-base">
