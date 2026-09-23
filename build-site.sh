@@ -16,5 +16,6 @@ cp "$project_dir/_headers" "$build_dir/client/_headers"
 cp "$project_dir/assets/hirepath-logo.png" "$build_dir/client/assets/hirepath-logo.png"
 cp "$project_dir/assets/og.png" "$build_dir/client/assets/og.png"
 cp "$project_dir/server/index.js" "$build_dir/server/index.js"
+cp "$project_dir/server/gemini-proxy.js" "$build_dir/server/gemini-proxy.js"
 
 printf 'Built HirePath for Sites at %s\n' "$build_dir"

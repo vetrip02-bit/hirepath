@@ -499,14 +499,10 @@
 
     var s = raw.settings && typeof raw.settings === 'object' ? raw.settings : {};
     var savedModel = asText(s.model).slice(0, 80);
-    /* Anyone still carrying the previous default is moved to the current one:
-       a saved value would otherwise pin them to a model that returns 404. */
-    var usedPreviousDefault = savedModel === 'gemini-3.5-flash-lite';
-    if (usedPreviousDefault) { savedModel = ''; }
     base.settings = {
       apiKey: asText(s.apiKey).slice(0, 200),
       model: savedModel || base.settings.model,
-      demoMode: usedPreviousDefault ? false : s.demoMode === true,
+      demoMode: s.demoMode === true,
       notificationsEnabled: s.notificationsEnabled === true
     };
 
@@ -4790,9 +4786,9 @@
 
       h('hr', { class: 'divider' }),
 
-      h('div', { class: 'notice warn' },
-        h('p', null, 'This classroom version stores the Gemini key in your browser. ' +
-                     'A public production application must use a secure server-side proxy.')),
+      h('div', { class: 'notice' },
+        h('p', null, 'On the hosted site, leave the key empty to use the secure server connection. ' +
+                     'Add a personal key only when running HirePath from a plain local/static copy.')),
 
       h('form', {
         class: 'form-grid', novalidate: true,
@@ -4805,8 +4801,8 @@
           toast('Gemini settings saved.', 'ok');
         }
       },
-        field('s-key', 'Gemini key', keyInput,
-          'Stored only in this browser, and never written to the console or to any log.', true),
+        field('s-key', 'Personal Gemini key (optional)', keyInput,
+          'When supplied, it is stored only in this browser and never written to a log.', true),
         h('div', { class: 'check-item field-wide' },
           h('label', { for: 's-show-key' }, showKey, h('span', null, 'Show the key while I check it'))),
         field('s-model', 'Gemini model', modelInput,
@@ -4818,7 +4814,7 @@
       ),
       status,
       h('p', { class: 'small muted mb-0' },
-        'No key? Keep Demo mode on.')
+        'No personal key? The hosted site uses its secure Gemini connection automatically.')
     );
   }
 

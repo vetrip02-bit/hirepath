@@ -1,0 +1,74 @@
+/* ==========================================================================
+   HirePath — blog article
+   Loads after landing.css and only adds what the article needs.
+   ========================================================================== */
+
+.post-shell { max-width: 760px; }
+
+.post-head {
+  padding: 3.25rem 0 2rem;
+  background:
+    radial-gradient(760px 340px at 20% -20%, rgba(3,128,236,.10), transparent 70%),
+    var(--tint-050);
+  border-bottom: 1px solid var(--line);
+}
+.post-kicker {
+  margin: 0 0 .5rem; color: var(--bright);
+  font-size: .8rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+}
+.post-head h1 {
+  font-size: clamp(2.1rem, 4.4vw, 3.1rem); letter-spacing: -.035em; margin-bottom: .5rem;
+}
+.post-standfirst {
+  font-size: 1.12rem; color: var(--ink-soft); max-width: 54ch; margin-bottom: 1rem;
+}
+.post-meta { margin: 0; color: var(--ink-muted); font-size: .88rem; font-weight: 600; }
+
+.post-body { padding-top: 2.5rem; padding-bottom: 3.5rem; }
+.post-body p { font-size: 1.05rem; color: var(--ink); line-height: 1.75; }
+
+.post-lead {
+  font-size: 1.2rem !important; color: var(--ink) !important; line-height: 1.6 !important;
+}
+
+.post-body h2 {
+  margin-top: 2.25rem; margin-bottom: .6rem;
+  font-size: clamp(1.4rem, 2.4vw, 1.75rem); letter-spacing: -.02em;
+}
+
+.post-standout {
+  margin: 1.5rem 0; padding: .9rem 1.2rem;
+  border-left: 4px solid var(--bright); background: var(--tint-050);
+  border-radius: 0 10px 10px 0;
+  font-size: 1.1rem !important; font-weight: 700; color: var(--navy-800) !important;
+}
+
+.post-steps {
+  margin: 1.1rem 0 1.5rem; padding: 1.1rem 1.3rem 1.1rem 2.6rem;
+  background: #fff; border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+.post-steps li { margin-bottom: .45rem; color: var(--ink); font-weight: 600; }
+.post-steps li:last-child { margin-bottom: 0; }
+.post-steps li::marker { color: var(--bright); }
+
+.post-mantra {
+  margin-top: 2.25rem; text-align: center;
+  font-size: 1.05rem !important; font-weight: 700; color: var(--navy-800) !important;
+  letter-spacing: .01em;
+}
+.post-closing {
+  text-align: center; font-size: 1.25rem !important; font-weight: 700;
+  color: var(--navy-900) !important; margin-bottom: 2rem;
+}
+
+.post-cta {
+  display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center;
+  padding-top: 1.75rem; border-top: 1px solid var(--line);
+}
+
+@media (max-width: 560px) {
+  .post-head { padding: 2.25rem 0 1.5rem; }
+  .post-body p { font-size: 1rem; }
+  .post-cta .btn { width: 100%; }
+}

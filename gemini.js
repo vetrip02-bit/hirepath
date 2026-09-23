@@ -12,6 +12,7 @@
 
   var ENDPOINT_BASE = 'https://generativelanguage.googleapis.com/v1beta/models/';
   var DEFAULT_MODEL = 'gemini-3.6-flash';
+  var FALLBACK_MODELS = ['gemini-3.5-flash-lite', 'gemini-2.5-flash'];
   var REQUEST_TIMEOUT_MS = 60000;
 
   /* ---------------------------------------------------------------------- */
@@ -262,17 +263,27 @@
     /* A manually saved key keeps the original direct-browser behaviour. When
        the field is empty, the hosted app uses its server-side default key so
        the credential never appears in the public JavaScript bundle. */
-    var url = apiKey
-      ? ENDPOINT_BASE + encodeURIComponent(model) + ':generateContent'
-      : '/api/gemini';
     var headers = { 'Content-Type': 'application/json' };
-    if (apiKey) { headers['x-goog-api-key'] = apiKey; }
+    if (apiKey) {
+      headers['x-goog-api-key'] = apiKey;
+    } else {
+      /* The proxy validates this value and treats it only as a preference.
+         The server still owns the API key and the fallback chain. */
+      headers['X-HirePath-Model'] = model;
+    }
+
+    var directModels = [model].concat(FALLBACK_MODELS).filter(function (name, index, all) {
+      return name && all.indexOf(name) === index;
+    });
 
     /* Rate limits (429) and overload (503) are both temporary, so they are
        retried automatically with backoff before the user ever sees an error.
        Everything else fails immediately — retrying a bad key or a bad model
        would only waste more of the quota. */
-    function sendOnce() {
+    function sendOnce(selectedModel) {
+      var url = apiKey
+        ? ENDPOINT_BASE + encodeURIComponent(selectedModel) + ':generateContent'
+        : '/api/gemini';
       var controller = (typeof AbortController === 'function') ? new AbortController() : null;
       var timer = controller ? setTimeout(function () { controller.abort(); }, REQUEST_TIMEOUT_MS) : null;
 
@@ -284,7 +295,23 @@
       }).then(function (res) {
       if (timer) { clearTimeout(timer); }
       if (!res.ok) {
-        var info = messageForStatus(res.status, !apiKey);
+        var proxyError = '';
+        var proxyHandledRetry = false;
+        try {
+          proxyError = res.headers && res.headers.get
+            ? (res.headers.get('X-HirePath-Error') || '')
+            : '';
+          proxyHandledRetry = !!(!apiKey && res.headers && res.headers.get &&
+            res.headers.get('X-HirePath-Retry-Handled') === 'true');
+        } catch (e0) { /* optional proxy metadata */ }
+
+        var info = proxyError === 'not-configured'
+          ? {
+              kind: 'no-proxy-key',
+              message: 'Gemini is connected, but this deployment has no server-side key yet. ' +
+                       'Add GEMINI_API_KEY in the hosting environment, or add a personal key in Settings.'
+            }
+          : messageForStatus(res.status, !apiKey);
         /* Honour Retry-After when the server sends it. */
         var retryAfter = 0;
         try {
@@ -300,10 +327,12 @@
         return res.text().then(function () {
           var err = new GeminiError(info.message, info.kind);
           err.retryAfterMs = retryAfter;
+          err.noRetry = proxyHandledRetry;
           throw err;
         }, function () {
           var err2 = new GeminiError(info.message, info.kind);
           err2.retryAfterMs = retryAfter;
+          err2.noRetry = proxyHandledRetry;
           throw err2;
         });
       }
@@ -358,9 +387,12 @@
     var MAX_ATTEMPTS = 3;
 
     function attempt(n) {
-      return sendOnce().catch(function (err) {
+      var selectedModel = apiKey
+        ? directModels[Math.min(n - 1, directModels.length - 1)]
+        : model;
+      return sendOnce(selectedModel).catch(function (err) {
         var temporary = err && (err.kind === 'quota' || err.kind === 'overloaded' || err.kind === 'server');
-        if (!temporary || n >= MAX_ATTEMPTS) { throw err; }
+        if (!temporary || err.noRetry || n >= MAX_ATTEMPTS) { throw err; }
         /* Retry-After when offered, otherwise 2s then 5s, with a little jitter
            so repeated failures do not line up. */
         var wait = err.retryAfterMs || ((n === 1 ? 2000 : 5000) + Math.floor(Math.random() * 600));

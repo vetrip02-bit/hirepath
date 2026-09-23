@@ -245,18 +245,34 @@ topic and add it again.
 
 ---
 
-## Connecting a Gemini API key
+## Connecting Gemini
+
+### Hosted deployment (recommended)
+
+Keep the key out of browser storage. Set `GEMINI_API_KEY` as a secret environment variable in
+the host, leave the personal key field empty, turn Demo mode off, and press **Test connection**.
+
+For Netlify, the included `netlify.toml` publishes `dist/client` and routes `/api/gemini` to the
+server function in `netlify/functions/gemini.mjs`. Set these environment variables in Netlify:
+
+- `GEMINI_API_KEY` — required and secret.
+- `GEMINI_MODEL` — optional primary model; defaults to `gemini-3.6-flash`.
+- `GEMINI_FALLBACK_MODELS` — optional comma-separated fallback list.
+
+When Gemini returns a temporary 404, 429, or 5xx response, the secure proxy automatically tries
+`gemini-3.5-flash-lite` and then `gemini-2.5-flash`. The browser is told that fallback was already
+handled, so it does not multiply requests against the same outage.
+
+### Personal key in one browser
 
 1. Go to [Google AI Studio](https://aistudio.google.com/app/apikey) and create an API key.
 2. Open **Settings → Gemini** in HirePath.
-3. Paste the key into **Gemini API key** and press **Save Gemini settings**.
+3. Paste the key into **Personal Gemini key** and press **Save Gemini settings**.
 4. Untick **Demo mode**.
 5. Press **Test connection** to confirm the key works.
 
 The default model is **`gemini-3.6-flash`** and can be changed in the same panel if your key uses
-a different one. HirePath previously defaulted to `gemini-3.5-flash-lite`; a browser still
-carrying that saved value is moved to the current default on load, because the old name now
-returns 404.
+a different one. **Show models for my key** lists the models that key can actually generate with.
 
 **Errors are handled and explained in plain language**, never with a raw provider dump:
 
@@ -270,11 +286,10 @@ returns 404.
 | Invalid or empty JSON | HirePath recovers the JSON if it can, otherwise asks you to try again |
 | Output budget exhausted | Explains that the reply needed more room than was allowed, and suggests a shorter input |
 
-**429 and 503 are retried automatically.** Both are temporary, so HirePath retries up to three
-times with backoff (honouring `Retry-After` when the server sends it) and tells you what it is
-doing: *"Gemini is rate-limiting requests. Waiting 3 seconds and trying again (attempt 2 of 3)."*
-Only when all three attempts fail do you see an error. Everything else — a bad key, an unknown
-model — fails immediately, because retrying those would only burn more of the quota.
+**Temporary failures use model fallback automatically.** The hosted proxy tries stable fallback
+models before returning an error. A personal browser key also moves to the next fallback model
+after a temporary failure. Authentication and malformed-request errors fail immediately rather
+than burning quota.
 
 Free API keys allow only a few requests per minute and a limited number per day. Images cost far
 more than text, which is why HirePath downscales them before sending.
@@ -383,17 +398,18 @@ Where content came from is always labelled: a plan carries **Built by Gemini**,
   left over from an earlier build (or a plan you no longer want) can be deleted in one step.
   Plans generated before this change are kept in `localStorage` until you remove them.
 
-## API key security warning
+## API key security
 
-> **This classroom version stores the API key in your browser. A public production application
-> must use a secure server-side proxy.**
+> **Hosted deployments use a secure server-side proxy. Keep `GEMINI_API_KEY` in the hosting
+> environment and leave the personal browser-key field empty.**
 
 Anyone with access to your browser profile — or to a backup JSON you export — can read the key.
 For a real deployment, keep the key on a server and have the browser call your own endpoint,
 which then calls Gemini.
 
-The key is **not** hard-coded anywhere in this repository. It exists only if you type it into
-the Settings screen, and it is sent only in the `x-goog-api-key` request header.
+The key is **not** hard-coded anywhere in this repository. A personal key exists only if you type
+it into the Settings screen; the recommended hosted key stays in the server environment and is
+never delivered to browser JavaScript.
 
 ---
 
@@ -472,6 +488,12 @@ hirepath/
 ├── gemini.js       Gemini REST client, prompts, JSON schemas, error mapping, Demo mode
 ├── lookup.js       Wikipedia + Wiktionary/dictionary clients (no API key needed)
 ├── app.js          State, validation, routing, all views, time engine, reminders
+├── netlify.toml    Netlify build, publish and secure Gemini-function routing
+├── netlify/
+│   └── functions/gemini.mjs  Netlify Gemini proxy entry point
+├── server/
+│   ├── index.js             Sites worker entry point
+│   └── gemini-proxy.js      Shared secure proxy with model fallback
 ├── README.md       This file
 └── assets/
     └── hirepath-logo.png
